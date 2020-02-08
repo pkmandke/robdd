@@ -1,0 +1,17 @@
+Student:				
+
+Source code:
+
+  - structure and comprehensibility       (out of 6):  
+
+Report:
+
+  - lab overview                          (out of 3):  
+  - test case thoroughness                (out of 6):  
+  - code correctness is easy to confirm   (out of 3):  
+  - run-time analysis of large test cases (out of 6):  
+
+Total                                     (out of 24): 
+
+Comments:
+
