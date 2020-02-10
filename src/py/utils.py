@@ -30,3 +30,19 @@ def apply(op: str, lexpr: int, rexpr=None) -> int:
         return 0 if (lexpr == 1) and (rexpr == 0) else 1
     elif op == 'equiv':
         return 1 if lexpr == rexpr else 0
+
+
+def Apply(op: str, u_1, u_2):
+    '''u_1 and u_2 are RDP_nodes.'''
+    G = dict()
+    u = robdd.ROBDD() # u is an uninitialized ROBDD 
+
+    def apply_util(u1, u2):
+
+        try:
+            return self.G[str(u1) + str(',') + str(u2)]
+        except:
+            if (int(u1) in [0, 1]) and (int(u2) in [0, 1]):
+                u = utils.apply(op, u1, u2)
+            elif (u1[0] == u2[0] and u1[0] == 'x') and (u1[1] == u2[1]):
+                util

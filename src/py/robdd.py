@@ -1,18 +1,24 @@
 
+import utils
+
 class ROBDD:
 
-    def __init__(self, nvars: int, expr):
+    def __init__(self, nvars=None, expr=None):
 
         self.T = dict()
         self.T_len = 0
         self.H = dict()
 
+        self.nvars = nvars
         self.expr = expr
-        self.build_initialized = True
+        if self.expr:
+            self.build_initialized = True
+        else:
+            sel.build_initialized = False
 
     def __init_T(self):
-        self.T[0] = (nvars + 1, -1, -1)
-        self.T[1] = (nvars + 1, -1, -1)
+        self.T[0] = (self.nvars + 1, -1, -1)
+        self.T[1] = (self.nvars + 1, -1, -1)
         self.T_len = 2
 
     def __init_H(self):
@@ -90,11 +96,17 @@ class ROBDD:
     #     self.nvars = 4
     #     self.build_initialized = True
 
-    def Build(self):
+    def Build(self, expr=None):
 
-        # if not self.build_initialized:
-        #     self.__init_build(self)
+        if not self.build_initialized and expr:
+             # self.__init_build(self)
+             self.expr = expr
 
+         if not self.nvars and nvars:
+             self.nvars = nvars
+             self.__init_T()
+             self.__init_H()
+             
         def build_util(i):
             if i > self.nvars:
                 expr_val = self.expr.evaluate()
@@ -112,6 +124,3 @@ class ROBDD:
             build_util(1)
         else:
             print("Expression not initialized.")
-
-    def Apply(self):
-        pass

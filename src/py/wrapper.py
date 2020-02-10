@@ -19,3 +19,7 @@ class Wrapper:
             self.expr = e.Expression(self.RDP_parser.variables_index + 1, self.RDP_parser)
 
         self.robdd = robdd.ROBDD(self.expr)
+
+    def apply(self):
+
+        utils.Apply(self.expr)
