@@ -2,9 +2,12 @@
 
 class Expression:
 
-    def __init__(self, nvars: int):
+    def __init__(self, nvars: int, use_rdp=True, rdp=None):
 
         self.nvars = nvars
+        if use_rdp:
+            self.rdp = rdp
+
         self.x = [-1 for _ in range(self.nvars + 1)]
 
     @staticmethod
@@ -42,5 +45,9 @@ class Expression:
             return None
         return 1 if a == b else 0
 
-    def function():
-        return Expression.__not(Expression.__and(x[1], Expression.__equiv(Expression.__or(x[4], x[2]), x[3])))
+    def evaluate(self):
+        if self.use_rdp and self.rdp:
+            return self.rdp.parse_tree(self.x)
+        else:
+            '''Hard code an expression here.'''
+            return Expression.__not(Expression.__and(self.x[1], Expression.__equiv(Expression.__or(self.x[4], self.x[2]), self.x[3])))

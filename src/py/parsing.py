@@ -1,4 +1,28 @@
+
+import argparse
+
 import utils
+
+class Options:
+
+    def __init__(self):
+
+        self.initialized = False
+
+    def __build_parser(self, parser):
+
+        parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc.')
+        parser.add_argument('--expr', type=str, required=True,help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
+
+        self.initialized = True
+        self.parser = parser
+
+    def parse(self):
+
+        self.parser = argparse.ArgumentParser()
+        self.__build_parser(self.parser)
+
+        return parser.parse_args()
 
 class Lexer:
 
@@ -40,10 +64,6 @@ class Lexer:
             return self.expr[i]
 
         return None
-assert int(self.expr[i]) in [0, 1]
-
-            self.index = i + 1
-
 
     def reset_lexer(self):
         self.index = 0
@@ -108,15 +128,18 @@ class RecursiveDescentParser:
 
         def traverse(node):
 
-            if node.type == 'func':
-                if node.val == 'not':
-                    return utils.apply(node.val, traverse(node.left))
-                else:
-                    return utils.apply(node.val, traverse(node.left), rexpr=traverse(node.right))
-            elif node.type == 'var':
-                return variable_val[node.var_index]
-            elif node.type == 'const':
-                return int(node.val)
+            if node:
+                if node.type == 'func':
+                    if node.val == 'not':
+                        return utils.apply(node.val, traverse(node.left))
+                    else:
+                        return utils.apply(node.val, traverse(node.left), rexpr=traverse(node.right))
+                elif node.type == 'var':
+                    if variable_val[node.var_index] == -1:
+                        print("Variable {} is not initialized".format(node.var_index))
+                    return variable_val[node.var_index]
+                elif node.type == 'const':
+                    return int(node.val)
 
         if self.root:
             return traverse(self.root)

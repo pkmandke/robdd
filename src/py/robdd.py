@@ -1,12 +1,14 @@
 
 class ROBDD:
 
-    def __init__(self, nvars: int):
+    def __init__(self, nvars: int, expr):
 
         self.T = dict()
         self.T_len = 0
         self.H = dict()
-        self.build_initialized = False
+
+        self.expr = expr
+        self.build_initialized = True
 
     def __init_T(self):
         self.T[0] = (nvars + 1, -1, -1)
@@ -79,20 +81,23 @@ class ROBDD:
 
         return u
 
+    # DEPRECATED
     # helpers for Build follow
-    def __init_build(self):
-        self.expr = Expression(4)
-        self.nvars = 4
-        self.build_initialized = True
+    # def __init_build(self):
+    #
+    #     # Either use te Expression API from expression.py or the RDP API from parsing.py
+    #     self.expr = Expression(4, use_rdp=self.use_rdp)
+    #     self.nvars = 4
+    #     self.build_initialized = True
 
     def Build(self):
 
-        if not self.build_initialized:
-            self.__init_build(self)
+        # if not self.build_initialized:
+        #     self.__init_build(self)
 
         def build_util(i):
             if i > self.nvars:
-                expr_val = self.expr.function()
+                expr_val = self.expr.evaluate()
                 return 1 if expr_val else 0
 
             self.expr.x[i] = 0
@@ -103,4 +108,10 @@ class ROBDD:
 
             return self.Mk(i, v0, v1)
 
-        build_util(1)
+        if self.expr:
+            build_util(1)
+        else:
+            print("Expression not initialized.")
+
+    def Apply(self):
+        pass
