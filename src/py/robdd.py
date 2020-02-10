@@ -91,7 +91,7 @@ class ROBDD:
     # helpers for Build follow
     # def __init_build(self):
     #
-    #     # Either use te Expression API from expression.py or the RDP API from parsing.py
+    #     # Either use the Expression API from expression.py or the RDP API from parsing.py
     #     self.expr = Expression(4, use_rdp=self.use_rdp)
     #     self.nvars = 4
     #     self.build_initialized = True
@@ -106,7 +106,7 @@ class ROBDD:
              self.nvars = nvars
              self.__init_T()
              self.__init_H()
-             
+
         def build_util(i):
             if i > self.nvars:
                 expr_val = self.expr.evaluate()
@@ -121,6 +121,7 @@ class ROBDD:
             return self.Mk(i, v0, v1)
 
         if self.expr:
-            build_util(1)
+            return build_util(1)
         else:
             print("Expression not initialized.")
+            return None

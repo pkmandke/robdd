@@ -13,6 +13,9 @@ class Options:
 
         parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc.')
         parser.add_argument('--expr', type=str, required=True,help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
+        parer.add_argument('--op', type=str, default='', help='Operation to perform during Apply function.')
+        parer.add_argument('--expr1', type=str, default='', help='Expression 1 for Apply function.')
+        parser.add_argument('--expr2', type=str, default='', help='Expression 2 for Apply function.')
 
         self.initialized = True
         self.parser = parser

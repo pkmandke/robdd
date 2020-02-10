@@ -32,17 +32,35 @@ def apply(op: str, lexpr: int, rexpr=None) -> int:
         return 1 if lexpr == rexpr else 0
 
 
-def Apply(op: str, u_1, u_2):
+def Apply(op: str, u_1, u_2, rbd1, rbd2, rbd=None):
     '''u_1 and u_2 are RDP_nodes.'''
     G = dict()
-    u = robdd.ROBDD() # u is an uninitialized ROBDD 
+
+    if not rbd:
+        rbd = robdd.ROBDD() # rbd is an uninitialized ROBDD
 
     def apply_util(u1, u2):
 
         try:
-            return self.G[str(u1) + str(',') + str(u2)]
+            u = self.G[str(u1) + str(',') + str(u2)]
+            return u
         except:
-            if (int(u1) in [0, 1]) and (int(u2) in [0, 1]):
+            if (u1 in [0, 1]) and (u2 in [0, 1]):
                 u = utils.apply(op, u1, u2)
-            elif (u1[0] == u2[0] and u1[0] == 'x') and (u1[1] == u2[1]):
-                util
+            elif rbd1.T[u1][0] == rbd2[u2][0]:# (u1[0] == u2[0] and u1[0] == 'x') and (u1[1] == u2[1]):
+                u = rbd.Mk(rbd1.T[u1][0], \
+                apply_util(rbd1[u1][1], rbd2[u2][1]), \
+                apply_util(rbd1[u1][2], rbd2[u2][2]))
+            elif rbd1[u1][0] < rbd2[u2][0]:
+                u = rbd.Mk(rbd1.T[u1][0], \
+                apply_util(rbd1[u1][1], u2), \
+                apply_util(rbd1[u1][2], u2))
+            else:
+                u = rbd.Mk(rbd1.T[u2][0], \
+                apply_util(u1, rbd2[u2][1]), \
+                apply_util(u1, rbd2[u2][2]))
+
+        self.G[str(u1) + str(',') + str(u2)] = u
+        return u
+        
+    return apply_util(u_1, u_2), u

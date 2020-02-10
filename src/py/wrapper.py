@@ -22,4 +22,12 @@ class Wrapper:
 
     def apply(self):
 
-        utils.Apply(self.expr)
+        self.RDP_parsers = [parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr1)), \
+                            parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr1))]
+        self.expressions = [e.Expression(self.RDP_parsers[0].variables_index + 1, self.RDP_parsers[0]), \
+                            e.Expression(self.RDP_parsers[1].variables_index + 1, self.RDP_parsers[1])]
+
+        self.robdds = [robdd.ROBDD(self.expressions[0]), robdd.ROBDD(self.expressions[1])]
+
+
+        u = utils.Apply(self.args.op, self.robdds[0].build(), self.robdds[1].build(), self.robdds[0], self.robdds[1])
