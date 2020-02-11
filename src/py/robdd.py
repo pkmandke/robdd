@@ -1,5 +1,6 @@
 
 import utils
+import math
 
 class ROBDD:
 
@@ -9,6 +10,7 @@ class ROBDD:
         self.T_len = 0
         self.H = dict()
         self.__init_T()
+        self.root_u = -1
 
         self.nvars = nvars
         self.expr = expr
@@ -126,3 +128,93 @@ class ROBDD:
         else:
             print("Expression not initialized.")
             return None
+
+    def Restrict(self, values=[]): # Call build and save the returned u before calling Restrict.
+
+        assert len(values) > 0
+
+        def restrict(u, j, b):
+
+            if self.var_T(u) > j:
+                return u
+            elif self.var_T(u) < j:
+                return self.Mk(self.var_T(u), restrict(self.low_T(u), j, b), restrict(self.high_T(u), j, b))
+            elif self.var_T(u) == j:
+                if b == 0:
+                    return restrict(self.low_T(u))
+                elif b == 1:
+                    return restrict(self.high_T(u))
+
+        for i, val in enumerate(range(values[1:])):
+            if val != -1:
+                self.root_u = restrict(self.root_u, i + 1, val)
+
+    def StatCount(self, u_=None):
+
+        assert self.root_u != -1
+
+        def count(u):
+            if u == 0:
+                res = 0
+            elif u == 1:
+                res = 1
+            else:
+                res = int(math.pow(2, self.var_T(self.low_T(u)) - self.var_T(u) - 1) * count(self.low_T(u)) \
+                          + math.pow(2, self.var_T(self.high_T(u)) - self.var_T(u) - 1) * count(self.high_T(u)))
+
+            return res
+        if not u_:
+            u_ = self.root_u
+        return int(math.pow(2, self.var_T(u_) - 1) * count(u_))
+
+    def AnySat(self, u_=None):
+
+        assert self.root_u != -1
+        var_sat = {'var_idx': [], 'val': []}
+
+        def anysat(u):
+
+            if u == 0:
+                return None
+            elif u == 1:
+                return None
+            elif self.low_T(u) == 0:
+                var_sat['var_idx'].append(self.var_T(u))
+                var_sat['val'].append(1)
+                anysat(self.high_T(u))
+            else:
+                var_sat['var_idx'].append(self.var_T(u))
+                var_sat['val'].append(0)
+                anysat(self.low_T(u))
+
+        if not u_:
+            u_ = self.root_u
+        anysat(u_)
+        return var_sat
+
+    def AllSat(self, u_=None):
+
+        assert self.root_u != -1
+
+        # all_sats = [{'var_idx': [], 'val': []} for _ in range(self.nvars)]
+        all_sats = []
+
+        def allsat(u):
+            if u == 0:
+                return None
+            elif u == 1:
+                return allsat.extend([{'var_idx': [], 'val': []}])
+            else:
+                for _ in allsat(self.low_T(u)):
+                    _['var_idx'].append(self.var_T(u))
+                    _['val'].append(0)
+                for _ in allsat(self.high_T(u)):
+                    _['var_idx'].append(self.var_T(u))
+                    _['val'].append(1)
+
+        if not u_:
+            u_ = self.root_u
+
+        allsat(u_)
+
+        return all_sats
