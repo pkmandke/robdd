@@ -31,3 +31,5 @@ class Wrapper:
         self.robdds = [robdd.ROBDD(self.expressions[0]), robdd.ROBDD(self.expressions[1])]
 
         u, rbd = utils.Apply(self.args.op, self.robdds[0].build(), self.robdds[1].build(), self.robdds[0], self.robdds[1])
+
+        

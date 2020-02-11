@@ -48,18 +48,18 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
         except:
             if (u1 in [0, 1]) and (u2 in [0, 1]): # If u1 and u2 are constants, peform the op and return result.
                 u = utils.apply(op, u1, u2)
-            elif rbd1.T[u1][0] == rbd2[u2][0]: # If both u1 and u2 have the same var() value.
-                u = rbd.Mk(rbd1.T[u1][0], \
-                apply_util(rbd1[u1][1], rbd2[u2][1]), \
-                apply_util(rbd1[u1][2], rbd2[u2][2]))
-            elif rbd1[u1][0] < rbd2[u2][0]: # If var(u1) < var(u2)
-                u = rbd.Mk(rbd1.T[u1][0], \
-                apply_util(rbd1[u1][1], u2), \
-                apply_util(rbd1[u1][2], u2))
+            elif rbd1.var_T(u1) == rbd2.var_T(u2): # If both u1 and u2 have the same var() value.
+                u = rbd.Mk(rbd1.var_T(u1), \
+                apply_util(rbd1.low_T(u1), rbd2.low_T(u2), \
+                apply_util(rbd1.high_T(u1), rbd2.high_T(u2))
+            elif rbd1.var_T(u1) < rbd2.var_T(u2): # If var(u1) < var(u2)
+                u = rbd.Mk(rbd1.var_T(u1), \
+                apply_util(rbd1.low_T(u1), u2), \
+                apply_util(rbd1.high_T(u1), u2))
             else: # If var(u1) > var(u2)
-                u = rbd.Mk(rbd1.T[u2][0], \
-                apply_util(u1, rbd2[u2][1]), \
-                apply_util(u1, rbd2[u2][2]))
+                u = rbd.Mk(rbd1.var_T(u2), \
+                apply_util(u1, rbd2.low_T(u2)), \
+                apply_util(u1, rbd2.high_T(u2)))
 
         self.G[str(u1) + str(',') + str(u2)] = u # Cache this pair of u1 and u2 if niether of the above works.
         return u
