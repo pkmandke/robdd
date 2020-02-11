@@ -8,6 +8,7 @@ class ROBDD:
         self.T = dict()
         self.T_len = 0
         self.H = dict()
+        self.__init_T()
 
         self.nvars = nvars
         self.expr = expr
@@ -30,21 +31,21 @@ class ROBDD:
         self.T_len += 1
         return int(self.T_len - 1)
 
-    def __var_T(self, u: int) -> int:
+    def var_T(self, u: int) -> int:
 
         try:
             return self.T[u][0]
         except:
             return None
 
-    def __low_T(self, u: int) -> int:
+    def low_T(self, u: int) -> int:
 
         try:
             return self.T[u][1]
         except:
             return None
 
-    def __high_T(self, u: int) -> int:
+    def high_T(self, u: int) -> int:
 
         try:
             return self.T[u][2]

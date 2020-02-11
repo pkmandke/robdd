@@ -32,8 +32,8 @@ def apply(op: str, lexpr: int, rexpr=None) -> int:
         return 1 if lexpr == rexpr else 0
 
 
-def Apply(op: str, u_1, u_2, rbd1, rbd2, rbd=None):
-    '''u_1 and u_2 are RDP_nodes.'''
+def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
+    '''u_1 and u_2 are root values of the nodes of the 2 ROBDDs.'''
     G = dict()
 
     if not rbd:
@@ -42,25 +42,26 @@ def Apply(op: str, u_1, u_2, rbd1, rbd2, rbd=None):
     def apply_util(u1, u2):
 
         try:
+            # if this set of u1, u2 have been cached, just fetch and return.
             u = self.G[str(u1) + str(',') + str(u2)]
             return u
         except:
-            if (u1 in [0, 1]) and (u2 in [0, 1]):
+            if (u1 in [0, 1]) and (u2 in [0, 1]): # If u1 and u2 are constants, peform the op and return result.
                 u = utils.apply(op, u1, u2)
-            elif rbd1.T[u1][0] == rbd2[u2][0]:# (u1[0] == u2[0] and u1[0] == 'x') and (u1[1] == u2[1]):
+            elif rbd1.T[u1][0] == rbd2[u2][0]: # If both u1 and u2 have the same var() value.
                 u = rbd.Mk(rbd1.T[u1][0], \
                 apply_util(rbd1[u1][1], rbd2[u2][1]), \
                 apply_util(rbd1[u1][2], rbd2[u2][2]))
-            elif rbd1[u1][0] < rbd2[u2][0]:
+            elif rbd1[u1][0] < rbd2[u2][0]: # If var(u1) < var(u2)
                 u = rbd.Mk(rbd1.T[u1][0], \
                 apply_util(rbd1[u1][1], u2), \
                 apply_util(rbd1[u1][2], u2))
-            else:
+            else: # If var(u1) > var(u2)
                 u = rbd.Mk(rbd1.T[u2][0], \
                 apply_util(u1, rbd2[u2][1]), \
                 apply_util(u1, rbd2[u2][2]))
 
-        self.G[str(u1) + str(',') + str(u2)] = u
+        self.G[str(u1) + str(',') + str(u2)] = u # Cache this pair of u1 and u2 if niether of the above works.
         return u
-        
-    return apply_util(u_1, u_2), u
+
+    return apply_util(u_1, u_2), u # Return both the root node's 'u' value and the ROBDD object.
