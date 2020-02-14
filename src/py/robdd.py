@@ -9,7 +9,6 @@ class ROBDD:
         self.T = dict()
         self.T_len = 0
         self.H = dict()
-        self.__init_T()
         self.root_u = -1
 
         self.nvars = nvars
@@ -17,7 +16,10 @@ class ROBDD:
         if self.expr:
             self.build_initialized = True
         else:
-            sel.build_initialized = False
+            self.build_initialized = False
+
+        self.__init_T()
+
 
     def __init_T(self):
         self.T[0] = (self.nvars + 1, -1, -1)
@@ -99,20 +101,21 @@ class ROBDD:
     #     self.nvars = 4
     #     self.build_initialized = True
 
-    def Build(self, expr=None):
+    def Build(self, nvars=None, expr=None):
 
         if not self.build_initialized and expr:
-             # self.__init_build(self)
-             self.expr = expr
+            # self.__init_build(self)
+            self.expr = expr
 
-         if not self.nvars and nvars:
-             self.nvars = nvars
-             self.__init_T()
-             self.__init_H()
-
+        if not self.nvars and nvars:
+            self.nvars = nvars
+            self.__init_T()
+            self.__init_H()
+        print("nvars {}".format(self.nvars))
         def build_util(i):
             if i > self.nvars:
                 expr_val = self.expr.evaluate()
+                print("i  = {} expr = {}".format(i, expr_val))
                 return 1 if expr_val else 0
 
             self.expr.x[i] = 0

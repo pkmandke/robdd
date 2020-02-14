@@ -18,7 +18,7 @@ class RDP_node:
 def apply(op: str, lexpr: int, rexpr=None) -> int:
 
     if op == 'not':
-        return 0 is lexpr == 1 else 1
+        return 0 if lexpr == 1 else 1
 
     assert rexpr is not None
 
@@ -50,8 +50,8 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
                 u = utils.apply(op, u1, u2)
             elif rbd1.var_T(u1) == rbd2.var_T(u2): # If both u1 and u2 have the same var() value.
                 u = rbd.Mk(rbd1.var_T(u1), \
-                apply_util(rbd1.low_T(u1), rbd2.low_T(u2), \
-                apply_util(rbd1.high_T(u1), rbd2.high_T(u2))
+                apply_util(rbd1.low_T(u1), rbd2.low_T(u2)), \
+                apply_util(rbd1.high_T(u1), rbd2.high_T(u2)))
             elif rbd1.var_T(u1) < rbd2.var_T(u2): # If var(u1) < var(u2)
                 u = rbd.Mk(rbd1.var_T(u1), \
                 apply_util(rbd1.low_T(u1), u2), \

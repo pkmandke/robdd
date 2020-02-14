@@ -5,6 +5,7 @@ class Expression:
     def __init__(self, nvars: int, use_rdp=True, rdp=None):
 
         self.nvars = nvars
+        self.use_rdp = use_rdp
         if use_rdp:
             self.rdp = rdp
 

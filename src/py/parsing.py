@@ -12,9 +12,9 @@ class Options:
     def __build_parser(self, parser):
 
         parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc.')
-        parser.add_argument('--expr', type=str, required=True,help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
-        parer.add_argument('--op', type=str, default='', help='Operation to perform during Apply function.')
-        parer.add_argument('--expr1', type=str, default='', help='Expression 1 for Apply function.')
+        parser.add_argument('--expr', type=str, required=True, help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
+        parser.add_argument('--op', type=str, default='', help='Operation to perform during Apply function.')
+        parser.add_argument('--expr1', type=str, default='', help='Expression 1 for Apply function.')
         parser.add_argument('--expr2', type=str, default='', help='Expression 2 for Apply function.')
 
         self.initialized = True
@@ -25,7 +25,7 @@ class Options:
         self.parser = argparse.ArgumentParser()
         self.__build_parser(self.parser)
 
-        return parser.parse_args()
+        return self.parser.parse_args()
 
 class Lexer:
 
@@ -96,7 +96,7 @@ class RecursiveDescentParser:
                         return
                 elif item[0] == 'x':
                     if node.left:
-                        node.right = utils.RDP_node(val=item, type='var,' is_terminal=True, \
+                        node.right = utils.RDP_node(val=item, type='var', is_terminal=True,\
                         is_var=True, var_index=int(item[1]))
                     else:
                         node.left = utils.RDP_node(val=item, type='var', is_terminal=True, \
@@ -121,13 +121,15 @@ class RecursiveDescentParser:
         if value in ['and', 'or', 'not', 'equiv', 'imp']:
             self.root.val = value
             self.root.is_func = True
+            self.root.type = 'func'
             __build(self.root)
         else:
             print("First input cannot be constant or variable. It must be a boolean function among: ['and', 'or', 'not', 'equiv', 'imp']")
 
     def parse_tree(self, variable_val=[]) -> int:
 
-        assert len(variable_val) == (self.variables_index + 1)
+        print("var_val {}, self {}".format(len(variable_val), self.variables_index))
+        assert (len(variable_val) - 1) == (self.variables_index + 1)
 
         def traverse(node):
 
