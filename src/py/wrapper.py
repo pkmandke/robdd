@@ -13,16 +13,16 @@ class Wrapper:
         self.expr = expr
         self.args = parsing.Options().parse()
         if use_rdp:
-            print("Building parser")
+            # print("Building parser")
             # Create an instance of the RecursiveDescentParser by indirectly creating a lexical analyzer.
             self.RDP_parser = parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr))
-            print("Building the parser")
+            # print("Building the parser")
             self.RDP_parser.build()
 
             self.expr = e.Expression(nvars=self.RDP_parser.variables_index + 1, rdp=self.RDP_parser)
-            print("Obtained expression")
+            # print("Obtained expression")
         self.robdd = robdd.ROBDD(nvars=self.args.nvars, expr=self.expr)
-        print("Formed robdd")
+        # print("Formed robdd")
     def apply(self):
 
         self.RDP_parsers = [parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr1)), \

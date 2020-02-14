@@ -140,9 +140,10 @@ class RecursiveDescentParser:
                     else:
                         return utils.apply(node.val, traverse(node.left), rexpr=traverse(node.right))
                 elif node.type == 'var':
-                    if variable_val[node.var_index] == -1:
+                    print("vars {} {}".format(variable_val, variable_val[node.var_index + 1]))
+                    if variable_val[node.var_index + 1] == -1:
                         print("Variable {} is not initialized".format(node.var_index))
-                    return variable_val[node.var_index]
+                    return variable_val[node.var_index + 1]
                 elif node.type == 'const':
                     return int(node.val)
 
