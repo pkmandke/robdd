@@ -144,11 +144,11 @@ class ROBDD:
                 return self.Mk(self.var_T(u), restrict(self.low_T(u), j, b), restrict(self.high_T(u), j, b))
             elif self.var_T(u) == j:
                 if b == 0:
-                    return restrict(self.low_T(u))
+                    return restrict(self.low_T(u), j, b)
                 elif b == 1:
-                    return restrict(self.high_T(u))
+                    return restrict(self.high_T(u), j, b)
 
-        for i, val in enumerate(range(values[1:])):
+        for i, val in enumerate(values[1:]):
             if val != -1:
                 self.root_u = restrict(self.root_u, i + 1, val)
 

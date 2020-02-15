@@ -36,7 +36,7 @@ class Wrapper:
         self.robdds = [robdd.ROBDD(nvars=self.args.nvars1, expr=self.expressions[0]),\
                        robdd.ROBDD(nvars=self.args.nvars2, expr=self.expressions[1])]
         self.robdds[0].Build(), self.robdds[1].Build()
-        print("Before u1 {0}, u2 {1}".format(self.robdds[0].root_u, self.robdds[1].root_u))
+
         u, rbd = utils.Apply(self.args.op, self.robdds[0].root_u, self.robdds[1].root_u, self.robdds[0], self.robdds[1])
 
         return rbd
@@ -48,3 +48,7 @@ class Wrapper:
     def stat_utils(self, util='AllSat'):
 
         return getattr(self.robdd, util)()
+
+    def restrict(self, l: list):
+
+        self.robdd.Restrict(l)

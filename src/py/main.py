@@ -22,4 +22,9 @@ def main():
     print()
 
     print(test_obj.apply().T)
+
+    print("RESTRICT: ")
+    test_obj.restrict([-1, 1])
+
+    print("T: {0}, root {1}".format(test_obj.robdd.T, test_obj.robdd.root_u))
 main()
