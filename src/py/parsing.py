@@ -65,9 +65,13 @@ class Lexer:
             return self.expr[i:i+5]
 
         # Check for variables (assuming variables are denoted by x1, x2 and so on)
-        if (i+1) < len(self.expr) and self.expr[i] == 'x' and (int(self.expr[i+1]) > 0):
-            self.index = i + 2
-            return self.expr[i:i+2]
+        if (i+1) < len(self.expr) and self.expr[i] == 'x':
+            k = 1
+            while (i + k) < len(self.expr) and self.expr[i + k] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                k += 1
+
+            self.index = i + k
+            return self.expr[i:i+k]
 
         # If it's niether variable nor operation then it must be a constant!
         if i < len(self.expr):
@@ -108,13 +112,13 @@ class RecursiveDescentParser:
                 elif item[0] == 'x':
                     if node.left:
                         node.right = utils.RDP_node(val=item, type='var', is_terminal=True,\
-                        is_var=True, var_index=int(item[1]))
+                        is_var=True, var_index=int(item[1:]))
                     else:
                         node.left = utils.RDP_node(val=item, type='var', is_terminal=True, \
-                        is_var=True, var_index=int(item[1]))
+                        is_var=True, var_index=int(item[1:]))
 
-                    if int(item[1]) > self.variables_index:
-                        self.variables_index = int(item[1])
+                    if int(item[1:]) > self.variables_index:
+                        self.variables_index = int(item[1:])
 
                     if node.val == 'not':
                         return

@@ -1,0 +1,70 @@
+\documentclass[a4paper, titlepage, 12pt]{article}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{mdframed}
+\usepackage{subfig}
+\DeclareMathOperator{\argmax}{arg\,max}
+\numberwithin{equation}{section}
+% For box
+\usepackage{collectbox}
+
+\makeatletter
+\newcommand{\mybox}{%
+    \collectbox{%
+        \setlength{\fboxsep}{1pt}%
+        \fbox{\BOXCONTENT}%
+    }%
+}
+\makeatother
+%Endfor box
+
+
+
+\begin{document}
+    \title{ECE - 5534 Electronic Design Automation \\ ROBDDs}
+    \author{Prathamesh Mandke \\ \href{pkmandke@vt.edu}{pkmandke@vt.edu} \\ PID: 906239574}
+    \date{\today \\ \href{https://ece.vt.edu}{ECE} @ \href{https://vt.edu}{Virginia Tech}}
+    \maketitle
+    \newpage
+
+    \section{Lab Overview}
+
+        Reduced Ordered Binary Decision Diagrams (ROBDDs) are concise representations of boolean expressions using a directed acyclic graph.
+        ROBDDs make use of the if-then-else (INF) form of boolean expressions to construct the graphical representation.
+        An INF form of a boolean expression is one where any operations are only perfomed on variables with constants and INF statements.
+        The practicality of using the INF form to construct ROBDDs for any boolean expression stems from the Shannon Expansion idea.
+        Shannon Expansion involves breaking down an expression (with arbitrary number of variables) into an INF form by recursively setting and resetting the value of one variable at a time.
+        From the perspective of implementation in digital logic, the Shannon Expansion involves cascading multiplexer circuits by considering all combinations of a boolean variable at a time.
+        
+        When a complicated boolean expression is recursively broken down into it's INF, a series of INF statements are obtained.
+        Now, if any redundant INF statements are combined, the resulting set of INF statements can be expressed as a binary decision diagram.
+        When the order of variable selection is same across all recursive builds of the INF forms, the resulting decision diagram has nodes in the same order starting from the root.
+        Such a BDD is said to be an ordered BDD.
+        Going one step further, multiple nodes with the same left and right nodes can be combined since they are obviously redundant.
+        Such reduction leads to a unique representation of the boolean expression known as the ROBDD.
+        However, it is interesting to note that this representation is not unique to the order of variable selection and is in fact highly sensitive to it.
+        
+        This work involves the implementation of a ROBDD for boolean operations AND, OR, NOT, IMPLICATION and EQUIVALENCE.
+        The methods used to implement the ROBDD have been inspired from Henrik Anderson's document on Binary Decision Diagrams.
+
+    \section{Tests}
+
+        This section involves multiple tests and their results for verifying the functionality.
+        Initially, I have considered simple unit tests for verifying the correctness of individual methods such as Build, Apply, etc. 
+        Further, there are somewhat non-trivial and nuanced test cases for demonstrating the usefulness, simplicity and effectiveness of ROBDDs.
+
+        \subsection{Unit Tests}
+
+            This section includes unit tests for verifying functionality of individual methods of the ROBDD implementation.
+
+            \begin{itemize}
+                \item[1.] \tetxbf{Build (and Make)}
+                                        
+            \end{itemize}
+
+\end{document}

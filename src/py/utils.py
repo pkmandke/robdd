@@ -6,7 +6,7 @@ Also implements the Apply and Restrict utilities as functions that operate on RO
 import robdd
 
 class RDP_node:
-
+    '''A single node in a Recursive Descent Parser.'''
     def __init__(self, val=None, type='', is_terminal=False, is_var=False, var_index=-1, is_func=False):
 
         self.val = val
@@ -20,10 +20,12 @@ class RDP_node:
 
 def apply(op: str, lexpr: int, rexpr=None) -> int:
 
+    assert lexpr in [0, 1]
     if op == 'not':
         return 0 if lexpr == 1 else 1
 
     assert rexpr is not None
+    assert rexpr in [0, 1]
 
     if op == 'and':
         return 1 if lexpr and rexpr else 0
@@ -69,7 +71,7 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
 
     return apply_util(u_1, u_2), rbd # Return the root node's 'u' value and the ROBDD object.
 
-def Restrict(rbd1, u, j, b): # Call build and save the returned u before calling Restrict.
+def Restrict(rbd1, u, j, b):
     '''
     Returns a new ROBDD object formed by restricting rbd1 by the given condition b on variable j.
     This is not a method of a given ROBDD but a function that is applied on it.

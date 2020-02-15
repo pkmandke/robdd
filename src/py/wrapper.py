@@ -48,7 +48,7 @@ class Wrapper:
         return self.robdd.Build()
 
     def stat_utils(self, util='AllSat'):
-
+        '''A wrapper that calls statistical utilities of the ROBDD.'''
         return getattr(self.robdd, util)()
 
     def restrict(self, j: int, b: int):
