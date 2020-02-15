@@ -25,6 +25,9 @@ class Options:
         parser.add_argument('--expr1', type=str, default='', help='Expression 1 for Apply function.')
         parser.add_argument('--expr2', type=str, default='', help='Expression 2 for Apply function.')
 
+        parser.add_argument('--j', type=int, default=1, help='Variable number to restrict in expr.')
+        parser.add_argument('--b', type=int, default=0, help='Variable value to restrict.')
+
         self.initialized = True
         self.parser = parser
 
@@ -93,7 +96,6 @@ class RecursiveDescentParser:
             item = self.lexer.get_next_item()
 
             while item:
-                print(item)
                 if item in ['0', '1']:
 
                     if node.left:

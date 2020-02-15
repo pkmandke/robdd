@@ -9,22 +9,20 @@ def main():
 
     test_obj = Wrapper(use_rdp=True)
 
-    print("Root is {}".format(test_obj.build_robdd()))
-    print(test_obj.robdd.T)
+    print("ROBDD constructed from inout expression. T table is {0} and root node is {1}".format(test_obj.robdd.T, test_obj.build_robdd()))
 
-    print(test_obj.stat_utils())
+    print("AllSat utlitity output: {}".format(test_obj.stat_utils()))
 
-    print(test_obj.stat_utils(util='AnySat'))
+    print("AnySat utlitity output: {}".format(test_obj.stat_utils(util='AnySat')))
 
-    print(test_obj.stat_utils(util='StatCount'))
+    print("StatCount utlitity output: {}".format(test_obj.stat_utils(util='StatCount')))
 
-    print("APPLY: ")
-    print()
+    print("Applying expr1 op expr2 returns:")
+    print("ROBDD: {0}.".format(test_obj.apply().T))
 
     print(test_obj.apply().T)
 
-    print("RESTRICT: ")
     res_rbd = test_obj.restrict(j=1, b=0)
+    print("RESTRICT returns robdd {0} with root {1}.".format(res_rbd.T, res_rbd.root_u))
 
-    print("T: {0}, root {1}".format(res_rbd.T, res_rbd.root_u))
 main()
