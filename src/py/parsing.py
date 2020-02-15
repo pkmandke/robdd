@@ -1,4 +1,10 @@
+'''
+Parsing utilities.
 
+Includes commandline argument parser, a Lexical Analyzer and a Recursive Descent Parser.
+
+Author: Prathamesh Mandke
+'''
 import argparse
 
 import utils

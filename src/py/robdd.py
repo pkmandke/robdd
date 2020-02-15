@@ -1,3 +1,6 @@
+'''
+The main ROBDD class.
+'''
 
 import utils
 import math
@@ -92,15 +95,6 @@ class ROBDD:
 
         return u
 
-    # DEPRECATED
-    # helpers for Build follow
-    # def __init_build(self):
-    #
-    #     # Either use the Expression API from expression.py or the RDP API from parsing.py
-    #     self.expr = Expression(4, use_rdp=self.use_rdp)
-    #     self.nvars = 4
-    #     self.build_initialized = True
-
     def Build(self, nvars=None, expr=None):
 
         if not self.build_initialized and expr:
@@ -132,26 +126,6 @@ class ROBDD:
             print("Expression not initialized.")
             return None
 
-    def Restrict(self, values=[]): # Call build and save the returned u before calling Restrict.
-
-        assert len(values) > 0
-
-        def restrict(u, j, b):
-
-            if self.var_T(u) > j:
-                return u
-            elif self.var_T(u) < j:
-                return self.Mk(self.var_T(u), restrict(self.low_T(u), j, b), restrict(self.high_T(u), j, b))
-            elif self.var_T(u) == j:
-                if b == 0:
-                    return restrict(self.low_T(u), j, b)
-                elif b == 1:
-                    return restrict(self.high_T(u), j, b)
-
-        for i, val in enumerate(values[1:]):
-            if val != -1:
-                self.root_u = restrict(self.root_u, i + 1, val)
-
     def StatCount(self):
 
         assert self.root_u != -1
@@ -171,7 +145,6 @@ class ROBDD:
     def AnySat(self):
 
         assert self.root_u != -1
-        #var_sat = {'var_idx': [], 'val': []}
 
         def anysat(u, tup):
 

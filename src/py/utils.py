@@ -1,5 +1,6 @@
 '''
 General helper classes and functions.
+Also implements the Apply and Restrict utilities as functions that operate on ROBDD objects.
 '''
 
 import robdd
@@ -48,7 +49,6 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
             u = G[str(u1) + str(',') + str(u2)]
             return u
         except:
-            print("u1 {0}, u2 {1}".format(u1, u2))
             if (u1 in [0, 1]) and (u2 in [0, 1]): # If u1 and u2 are constants, peform the op and return result.
                 u = apply(op, u1, u2)
             elif rbd1.var_T(u1) == rbd2.var_T(u2): # If both u1 and u2 have the same var() value.
@@ -76,7 +76,7 @@ def Restrict(rbd1, u, j, b): # Call build and save the returned u before calling
     '''
     assert j > 0
     assert b in [0, 1]
-    print("rrbd1 nvars {}".format(rbd1.nvars))
+
     rbd = robdd.ROBDD(nvars=(rbd1.nvars - 1)) # Create a new robdd with 1 less variable than the original.
 
     def restrict(u):
@@ -85,7 +85,6 @@ def Restrict(rbd1, u, j, b): # Call build and save the returned u before calling
             rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
             return u
         elif rbd1.var_T(u) < j:
-            print("Making")
             return rbd.Mk(rbd1.var_T(u), restrict(rbd1.low_T(u)), restrict(rbd1.high_T(u)))
         elif rbd1.var_T(u) == j:
             if b == 0:

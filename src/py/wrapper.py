@@ -1,5 +1,7 @@
 '''
-Wrapper class that initializes all others.
+Wrapper class.
+This class helps instantiate the ROBDD, the Lexical Analyzer, the Recursive Descent Parser and the Expression classes.
+It also serves as an API for calling the various methods of the ROBDD for verification.
 '''
 
 import parsing
@@ -9,21 +11,21 @@ import utils
 
 class Wrapper:
 
-    def __init__(self, use_rdp=False, expr=[]):
+    def __init__(self, use_rdp=True, expr=[]):
 
         self.expr = expr
         self.args = parsing.Options().parse()
         if use_rdp:
-            # print("Building parser")
+
             # Create an instance of the RecursiveDescentParser by indirectly creating a lexical analyzer.
             self.RDP_parser = parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr))
-            # print("Building the parser")
-            self.RDP_parser.build()
+
+            self.RDP_parser.build() # Building the parser
 
             self.expr = e.Expression(nvars=self.RDP_parser.variables_index, rdp=self.RDP_parser)
-            # print("Obtained expression")
+
         self.robdd = robdd.ROBDD(nvars=self.args.nvars, expr=self.expr)
-        # print("Formed robdd")
+
     def apply(self):
 
         self.RDP_parsers = [parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr1)), \
@@ -42,7 +44,7 @@ class Wrapper:
         return rbd
 
     def build_robdd(self):
-
+        '''A wrapper that calls the Build utility of the robdd.'''
         return self.robdd.Build()
 
     def stat_utils(self, util='AllSat'):
