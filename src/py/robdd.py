@@ -111,11 +111,10 @@ class ROBDD:
             self.nvars = nvars
             self.__init_T()
             self.__init_H()
-        print("nvars {}".format(self.nvars))
+
         def build_util(i):
             if i > self.nvars:
                 expr_val = self.expr.evaluate()
-                print("i  = {} expr = {}".format(i, expr_val))
                 return 1 if expr_val else 0
 
             self.expr.x[i] = 0
@@ -127,7 +126,8 @@ class ROBDD:
             return self.Mk(i, v0, v1)
 
         if self.expr:
-            return build_util(1)
+            self.root_u = build_util(1)
+            return self.root_u
         else:
             print("Expression not initialized.")
             return None
@@ -164,13 +164,12 @@ class ROBDD:
             else:
                 res = int(math.pow(2, self.var_T(self.low_T(u)) - self.var_T(u) - 1) * count(self.low_T(u)) \
                           + math.pow(2, self.var_T(self.high_T(u)) - self.var_T(u) - 1) * count(self.high_T(u)))
-
             return res
         if not u_:
             u_ = self.root_u
         return int(math.pow(2, self.var_T(u_) - 1) * count(u_))
 
-    def AnySat(self, u_=None):
+    def AnySat(self):
 
         assert self.root_u != -1
         var_sat = {'var_idx': [], 'val': []}
@@ -200,24 +199,33 @@ class ROBDD:
         assert self.root_u != -1
 
         # all_sats = [{'var_idx': [], 'val': []} for _ in range(self.nvars)]
-        all_sats = []
+        all_sats = tuple()
 
-        def allsat(u):
+        def allsat(u, tup):
+
             if u == 0:
-                return None
+                print("000")
+                return tup, 0
             elif u == 1:
-                return allsat.extend([{'var_idx': [], 'val': []}])
+                print("111")
+                return tup + tuple([{'var_idx': [], 'val': []}]), 1
             else:
-                for _ in allsat(self.low_T(u)):
-                    _['var_idx'].append(self.var_T(u))
-                    _['val'].append(0)
-                for _ in allsat(self.high_T(u)):
-                    _['var_idx'].append(self.var_T(u))
-                    _['val'].append(1)
+                tupL, lowT = allsat(self.low_T(u), tup)
+                if lowT:
+                    for _ in tupL:
+                        _['var_idx'].append(self.var_T(u))
+                        _['val'].append(0)
+                tupH, highT = allsat(self.high_T(u), tup)
+                if highT:
+                    for _ in tupH:
+                        _['var_idx'].append(self.var_T(u))
+                        _['val'].append(1)
+                return tupL + tupH, 1
 
-        if not u_:
+        if u_ is None:
+            print("sdfroot {}".format(type(self.root_u)))
             u_ = self.root_u
 
-        allsat(u_)
+        return allsat(self.root_u, tuple())[0]
 
-        return all_sats
+        # return all_sats

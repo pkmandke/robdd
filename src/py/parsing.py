@@ -53,8 +53,8 @@ class Lexer:
             self.index = i + 5
             return self.expr[i:i+5]
 
-        # Check for variables (assuming variables are denoted by x0, x1 and so on)
-        if (i+1) < len(self.expr) and self.expr[i] == 'x' and (int(self.expr[i+1]) >= 0):
+        # Check for variables (assuming variables are denoted by x1, x2 and so on)
+        if (i+1) < len(self.expr) and self.expr[i] == 'x' and (int(self.expr[i+1]) > 0):
             self.index = i + 2
             return self.expr[i:i+2]
 
@@ -77,7 +77,7 @@ class RecursiveDescentParser:
 
         self.lexer = lexer
         self.root = utils.RDP_node()
-        self.variables_index = -1
+        self.variables_index = 0
 
     def build(self):
 
@@ -110,10 +110,10 @@ class RecursiveDescentParser:
                 elif item in ['and', 'or', 'not', 'equiv', 'imp']:
                     if node.left:
                         node.right = utils.RDP_node(val=item, type='func', is_func=True)
-                        self.build(node.right)
+                        __build(node.right)
                     else:
                         node.left = utils.RDP_node(val=item, type='func', is_func=True)
-                        self.build(node.left)
+                        __build(node.left)
 
                 item = self.lexer.get_next_item()
 
@@ -128,8 +128,7 @@ class RecursiveDescentParser:
 
     def parse_tree(self, variable_val=[]) -> int:
 
-        print("var_val {}, self {}".format(len(variable_val), self.variables_index))
-        assert (len(variable_val) - 1) == (self.variables_index + 1)
+        assert ((len(variable_val)) - 1) == (self.variables_index)
 
         def traverse(node):
 
@@ -140,10 +139,9 @@ class RecursiveDescentParser:
                     else:
                         return utils.apply(node.val, traverse(node.left), rexpr=traverse(node.right))
                 elif node.type == 'var':
-                    print("vars {} {}".format(variable_val, variable_val[node.var_index + 1]))
-                    if variable_val[node.var_index + 1] == -1:
+                    if variable_val[node.var_index] == -1:
                         print("Variable {} is not initialized".format(node.var_index))
-                    return variable_val[node.var_index + 1]
+                    return variable_val[node.var_index]
                 elif node.type == 'const':
                     return int(node.val)
 

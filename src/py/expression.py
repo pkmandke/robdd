@@ -8,7 +8,7 @@ class Expression:
         self.use_rdp = use_rdp
         if use_rdp:
             self.rdp = rdp
-
+        print("nvars is what {}".format(self.nvars))
         self.x = [-1 for _ in range(self.nvars + 1)]
 
     @staticmethod
