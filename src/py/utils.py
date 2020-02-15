@@ -68,3 +68,36 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
         return u
 
     return apply_util(u_1, u_2), rbd # Return the root node's 'u' value and the ROBDD object.
+
+def Restrict(rbd1, u, j, b): # Call build and save the returned u before calling Restrict.
+    '''
+    Returns a new ROBDD object formed by restricting rbd1 by the given condition b on variable j.
+    This is not a method of a given ROBDD but a function that is applied on it.
+    '''
+    assert j > 0
+    assert b in [0, 1]
+    print("rrbd1 nvars {}".format(rbd1.nvars))
+    rbd = robdd.ROBDD(nvars=(rbd1.nvars - 1)) # Create a new robdd with 1 less variable than the original.
+
+    def restrict(u):
+
+        if rbd1.var_T(u) > j:
+            rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
+            return u
+        elif rbd1.var_T(u) < j:
+            print("Making")
+            return rbd.Mk(rbd1.var_T(u), restrict(rbd1.low_T(u)), restrict(rbd1.high_T(u)))
+        elif rbd1.var_T(u) == j:
+            if b == 0:
+                return restrict(rbd1.low_T(u))
+            elif b == 1:
+                return restrict(rbd1.high_T(u))
+
+    if rbd1.root_u == 0:
+        rbd.root_u = 0
+    elif rbd1.root_u == 1:
+        rbd.root_u = 1
+    else:
+        rbd.root_u = restrict(rbd1.root_u)
+
+    return rbd

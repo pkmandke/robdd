@@ -49,6 +49,6 @@ class Wrapper:
 
         return getattr(self.robdd, util)()
 
-    def restrict(self, l: list):
+    def restrict(self, j: int, b: int):
 
-        self.robdd.Restrict(l)
+        return utils.Restrict(self.robdd, self.robdd.root_u, j, b)

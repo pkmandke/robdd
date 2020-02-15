@@ -24,7 +24,7 @@ def main():
     print(test_obj.apply().T)
 
     print("RESTRICT: ")
-    test_obj.restrict([-1, 1])
+    res_rbd = test_obj.restrict(j=1, b=0)
 
-    print("T: {0}, root {1}".format(test_obj.robdd.T, test_obj.robdd.root_u))
+    print("T: {0}, root {1}".format(res_rbd.T, res_rbd.root_u))
 main()
