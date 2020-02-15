@@ -16,4 +16,10 @@ def main():
 
     print(test_obj.stat_utils(util='AnySat'))
 
+    print(test_obj.stat_utils(util='StatCount'))
+
+    print("APPLY: ")
+    print()
+
+    print(test_obj.apply().T)
 main()

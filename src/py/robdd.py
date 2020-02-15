@@ -84,7 +84,7 @@ class ROBDD:
             return l
 
         if self.__member_H(i, l, h):
-            return __lookup_H(i, l, h)
+            return self.__lookup_H(i, l, h)
 
         u = self.__add_T(i, l, h)
 
@@ -152,7 +152,7 @@ class ROBDD:
             if val != -1:
                 self.root_u = restrict(self.root_u, i + 1, val)
 
-    def StatCount(self, u_=None):
+    def StatCount(self):
 
         assert self.root_u != -1
 
@@ -165,49 +165,42 @@ class ROBDD:
                 res = int(math.pow(2, self.var_T(self.low_T(u)) - self.var_T(u) - 1) * count(self.low_T(u)) \
                           + math.pow(2, self.var_T(self.high_T(u)) - self.var_T(u) - 1) * count(self.high_T(u)))
             return res
-        if not u_:
-            u_ = self.root_u
-        return int(math.pow(2, self.var_T(u_) - 1) * count(u_))
+
+        return int(math.pow(2, self.var_T(self.root_u) - 1) * count(self.root_u))
 
     def AnySat(self):
 
         assert self.root_u != -1
-        var_sat = {'var_idx': [], 'val': []}
+        #var_sat = {'var_idx': [], 'val': []}
 
-        def anysat(u):
+        def anysat(u, tup):
 
             if u == 0:
                 return None
             elif u == 1:
-                return None
+                return tup
             elif self.low_T(u) == 0:
-                var_sat['var_idx'].append(self.var_T(u))
-                var_sat['val'].append(1)
-                anysat(self.high_T(u))
+                tl = list(tup)
+                tl[self.var_T(u)] = 1
+                tup = tuple(tl)
+                return anysat(self.high_T(u), tup)
             else:
-                var_sat['var_idx'].append(self.var_T(u))
-                var_sat['val'].append(0)
-                anysat(self.low_T(u))
+                tl = list(tup)
+                tl[self.var_T(u)] = 1
+                tup = tuple(tl)
+                return anysat(self.low_T(u), tup)
 
-        if not u_:
-            u_ = self.root_u
-        anysat(u_)
-        return var_sat
+        return anysat(self.root_u, tuple([-1 for _ in range(self.nvars + 1)]))
 
-    def AllSat(self, u_=None):
+    def AllSat(self):
 
         assert self.root_u != -1
-
-        # all_sats = [{'var_idx': [], 'val': []} for _ in range(self.nvars)]
-        all_sats = tuple()
 
         def allsat(u, tup):
 
             if u == 0:
-                print("000")
                 return tup, 0
             elif u == 1:
-                print("111")
                 return tup + tuple([{'var_idx': [], 'val': []}]), 1
             else:
                 tupL, lowT = allsat(self.low_T(u), tup)
@@ -222,10 +215,4 @@ class ROBDD:
                         _['val'].append(1)
                 return tupL + tupH, 1
 
-        if u_ is None:
-            print("sdfroot {}".format(type(self.root_u)))
-            u_ = self.root_u
-
         return allsat(self.root_u, tuple())[0]
-
-        # return all_sats

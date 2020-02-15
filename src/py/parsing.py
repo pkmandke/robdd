@@ -11,9 +11,11 @@ class Options:
 
     def __build_parser(self, parser):
 
-        parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc.')
+        parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc. in the default expression.')
         parser.add_argument('--expr', type=str, required=True, help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
         parser.add_argument('--op', type=str, default='', help='Operation to perform during Apply function.')
+        parser.add_argument('--nvars1', type=int, default=2, help='Number of variables x0, x1, etc. in expression1.')
+        parser.add_argument('--nvars2', type=int, default=2, help='Number of variables x0, x1, etc. in expression2.')
         parser.add_argument('--expr1', type=str, default='', help='Expression 1 for Apply function.')
         parser.add_argument('--expr2', type=str, default='', help='Expression 2 for Apply function.')
 
@@ -85,6 +87,7 @@ class RecursiveDescentParser:
             item = self.lexer.get_next_item()
 
             while item:
+                print(item)
                 if item in ['0', '1']:
 
                     if node.left:
@@ -114,6 +117,8 @@ class RecursiveDescentParser:
                     else:
                         node.left = utils.RDP_node(val=item, type='func', is_func=True)
                         __build(node.left)
+                if node.left and node.right:
+                    return
 
                 item = self.lexer.get_next_item()
 
