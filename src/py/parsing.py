@@ -18,7 +18,7 @@ class Options:
     def __build_parser(self, parser):
 
         parser.add_argument('--nvars', type=int, default=2, help='Number of variables x0, x1, etc. in the default expression.')
-        parser.add_argument('--expr', type=str, required=True, help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
+        parser.add_argument('--expr', type=str, default='', help='The main expression input as a string. No correctness check will be performed. Expression is assumed to be valid.')
         parser.add_argument('--op', type=str, default='', help='Operation to perform during Apply function.')
         parser.add_argument('--nvars1', type=int, default=2, help='Number of variables x0, x1, etc. in expression1.')
         parser.add_argument('--nvars2', type=int, default=2, help='Number of variables x0, x1, etc. in expression2.')
@@ -27,6 +27,8 @@ class Options:
 
         parser.add_argument('--j', type=int, default=1, help='Variable number to restrict in expr.')
         parser.add_argument('--b', type=int, default=0, help='Variable value to restrict.')
+
+        parser.add_argument('--call', type=str, default='', help='Function in main to be called.')
 
         self.initialized = True
         self.parser = parser

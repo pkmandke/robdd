@@ -15,7 +15,7 @@ class Wrapper:
 
         self.expr = expr
         self.args = parsing.Options().parse()
-        if use_rdp:
+        if use_rdp and self.args.expr:
 
             # Create an instance of the RecursiveDescentParser by indirectly creating a lexical analyzer.
             self.RDP_parser = parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr))
@@ -24,7 +24,7 @@ class Wrapper:
 
             self.expr = e.Expression(nvars=self.RDP_parser.variables_index, rdp=self.RDP_parser)
 
-        self.robdd = robdd.ROBDD(nvars=self.args.nvars, expr=self.expr)
+            self.robdd = robdd.ROBDD(nvars=self.args.nvars, expr=self.expr)
 
     def apply(self):
 
@@ -41,7 +41,7 @@ class Wrapper:
 
         u, rbd = utils.Apply(self.args.op, self.robdds[0].root_u, self.robdds[1].root_u, self.robdds[0], self.robdds[1])
 
-        return rbd
+        return rbd, self.robdds[0], self.robdds[1]
 
     def build_robdd(self):
         '''A wrapper that calls the Build utility of the robdd.'''

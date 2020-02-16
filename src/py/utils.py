@@ -84,7 +84,7 @@ def Restrict(rbd1, u, j, b):
     def restrict(u):
 
         if rbd1.var_T(u) > j:
-            rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
+            u = rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
             return u
         elif rbd1.var_T(u) < j:
             return rbd.Mk(rbd1.var_T(u), restrict(rbd1.low_T(u)), restrict(rbd1.high_T(u)))
@@ -102,3 +102,16 @@ def Restrict(rbd1, u, j, b):
         rbd.root_u = restrict(rbd1.root_u)
 
     return rbd
+
+def print_neat_T(r):
+
+    print("| u | i |  l |  h |")
+
+    for _ in sorted(r.T.keys()):
+        print("| {0} | {1} | {2} | {3} |".format(_, r.T[_][0], r.T[_][1], r.T[_][2]))
+    print()
+
+def print_neat_allsat(tup, nvars):
+
+    for _ in tup:
+        pass

@@ -34,7 +34,7 @@
 
     \section{Lab Overview}
 
-        Reduced Ordered Binary Decision Diagrams (ROBDDs) are concise representations of boolean expressions using a directed acyclic graph.
+        Reduced Ordered Binary Decision Diagrams (ROBDDs) are concise representations of boolean expressions in the form of a directed acyclic graph.
         ROBDDs make use of the if-then-else (INF) form of boolean expressions to construct the graphical representation.
         An INF form of a boolean expression is one where any operations are only perfomed on variables with constants and INF statements.
         The practicality of using the INF form to construct ROBDDs for any boolean expression stems from the Shannon Expansion idea.
@@ -63,8 +63,71 @@
             This section includes unit tests for verifying functionality of individual methods of the ROBDD implementation.
 
             \begin{itemize}
-                \item[1.] \tetxbf{Build (and Make)}
-                                        
-            \end{itemize}
+                \item[1.] \textbf{Build (and Make)}
+                    
+                    It was difficult to find online utilities that could generate the T table for a given expression.
+                    Thus, I have attempted to verify the same example as in the Henrik Anderson's document.
+                    The expression in the document is "and(equiv(x1, x2), equiv(x2, x3))".
 
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=0.3\textwidth, width=\textwidth]{img/robdd_build.png}
+                        \caption{Program output}
+                        \label{fig:build_prog_out}
+                    \end{figure}
+                    
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=140px, width=180px]{img/true_T_build.png}
+                        \caption{True output}
+                        \label{fig:build_true_out}
+                    \end{figure}
+
+                    The fact that the resulting BDD is also in the reduced form verifies the functionality of the Make (Mk) function as well.
+                \item[2.] \textbf{Apply}
+                    
+                    Consider Figure \ref{fig:test_apply}.
+
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=200px, width=400px]{img/test_apply.png}
+                        \caption{Testing Apply utility.}
+                        \label{fig:test_apply}
+                    \end{figure}
+
+                    It is easy to observe that for the resulting expression "equiv(and(x1, x2), or(x1, x2))" the T table is correct.
+                    Starting from the root node number 4, if $x1 = 0$ we check node 2 and if $x1 = 1$ we check node 3.
+                    Now, if $x1 = 0$ then $and(x1, x2) = 0$ and the equivalence will only be true if $or(x1, x2)$ is true, that is, if $x2 = 1$.
+                    This is verified from row number 3 of the resulting T table obtained after applying the equiv operation.
+                    Similarly, the behaviour for $x1 = 1$ can be verified easily.
+
+                \item[3.] \textbf{Restrict}
+
+                    To verify that restrict works as intended, consider the expression or(and(x1, x2), x2).
+                    Figure \ref{fig:test_restrict}, contains the results for all 4 settings of the 2 variables $x1$ and $x2$.
+
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=250px, width=350px]{img/test_restrict.png}
+                        \caption{Testing Restrict utility.}
+                        \label{fig:test_restrict}
+                    \end{figure}
+
+                    It can be observed that when $x1 = 0$, the expression is 0 if x2 is 0 else it is 1.
+                    Moreover, if $x1 = 1$, the expression is 0 if x2 is 0 else it is 1.
+                    With $x2 = 0$, the expression will always be 0 while if $x2 = 1$ the expression is a tautology.
+                    In the last 2 cases, the root of the ROBDD changes although the T table looks alike.
+
+                \item[4.] \textbf{StatCount, AnySat and AllSat}
+                
+                    Until now, I have considered relatively trivial examples since it was difficult to obtain T tables to compare and verify correctness.
+                    However, for the statistical measures, the University of Utah provides a BDD interface for result verification at this URL [1].
+
+                    Consider the expression 
+
+            \end{itemize}
+    
+    \section{References}
+
+            [1]  \href{http://formal.cs.utah.edu:8080/pbl/BDD.php}{http://formal.cs.utah.edu:8080/pbl/BDD.php}
 \end{document}
