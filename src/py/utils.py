@@ -42,7 +42,7 @@ def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
     G = dict()
 
     if not rbd:
-        rbd = robdd.ROBDD(nvars=rbd1.nvars + rbd2.nvars) # rbd is an uninitialized ROBDD
+        rbd = robdd.ROBDD(nvars=rbd1.nvars) # rbd is an uninitialized ROBDD
 
     def apply_util(u1, u2):
 
