@@ -22,7 +22,7 @@ class Wrapper:
 
             self.RDP_parser.build() # Building the parser
 
-            self.expr = e.Expression(nvars=self.RDP_parser.variables_index, rdp=self.RDP_parser)
+            self.expr = e.Expression(nvars=self.args.nvars, rdp=self.RDP_parser)
 
             self.robdd = robdd.ROBDD(nvars=self.args.nvars, expr=self.expr)
 
@@ -32,8 +32,8 @@ class Wrapper:
                             parsing.RecursiveDescentParser(parsing.Lexer(self.args.expr2))]
         self.RDP_parsers[0].build(), self.RDP_parsers[1].build()
 
-        self.expressions = [e.Expression(nvars=self.RDP_parsers[0].variables_index, rdp=self.RDP_parsers[0]), \
-                            e.Expression(nvars=self.RDP_parsers[1].variables_index, rdp=self.RDP_parsers[1])]
+        self.expressions = [e.Expression(nvars=self.args.nvars1, rdp=self.RDP_parsers[0]), \
+                            e.Expression(nvars=self.args.nvars2, rdp=self.RDP_parsers[1])]
 
         self.robdds = [robdd.ROBDD(nvars=self.args.nvars1, expr=self.expressions[0]),\
                        robdd.ROBDD(nvars=self.args.nvars2, expr=self.expressions[1])]

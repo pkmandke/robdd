@@ -105,6 +105,7 @@ class ROBDD:
             self.nvars = nvars
             self.__init_T()
             self.__init_H()
+
         def build_util(i):
 
             if i > self.nvars:

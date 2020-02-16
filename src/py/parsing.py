@@ -147,7 +147,7 @@ class RecursiveDescentParser:
 
     def parse_tree(self, variable_val=[]) -> int:
 
-        assert ((len(variable_val)) - 1) == (self.variables_index)
+        # assert ((len(variable_val)) - 1) == (self.variables_index) # This assumes that all nvars are present in the input expression.
 
         def traverse(node):
 
