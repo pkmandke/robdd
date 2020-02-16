@@ -79,12 +79,12 @@ def Restrict(rbd1, u, j, b):
     assert j > 0
     assert b in [0, 1]
 
-    rbd = robdd.ROBDD(nvars=(rbd1.nvars - 1)) # Create a new robdd with 1 less variable than the original.
+    rbd = robdd.ROBDD(nvars=rbd1.nvars) # Removing one less variable constraint since a variable with smaller index can be removed as well
 
     def restrict(u):
 
         if rbd1.var_T(u) > j:
-            u = rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
+            rbd.Mk(rbd1.var_T(u), rbd1.low_T(u), rbd1.high_T(u))
             return u
         elif rbd1.var_T(u) < j:
             return rbd.Mk(rbd1.var_T(u), restrict(rbd1.low_T(u)), restrict(rbd1.high_T(u)))
@@ -99,7 +99,25 @@ def Restrict(rbd1, u, j, b):
     elif rbd1.root_u == 1:
         rbd.root_u = 1
     else:
-        rbd.root_u = restrict(rbd1.root_u)
+        for i in range(len(rbd1.T.keys())):
+            if rbd1.var_T(i) != j:
+                rt = restrict(i)
+
+        for key in rbd.T.copy().keys():
+            if key > rt:
+                del rbd.T[key]
+
+        ref_keys = []
+        for key in sorted(rbd.T.keys()):
+            if key > 1:
+                ref_keys.extend([rbd.T[key][1], rbd.T[key][2]])
+
+        ref_keys = list(set(ref_keys))
+        for _ in rbd.T.copy().keys():
+            if _ in ref_keys or _ == rt:
+                continue
+            del rbd.T[_]
+
 
     return rbd
 
