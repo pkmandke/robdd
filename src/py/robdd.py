@@ -132,6 +132,8 @@ class ROBDD:
         assert self.root_u != -1
 
         def count(u):
+            if u == -1:
+                print("Error in StatCount; u == -1")
             if u == 0:
                 res = 0
             elif u == 1:
@@ -185,6 +187,6 @@ class ROBDD:
                     for _ in tupH:
                         _['var_idx'].append(self.var_T(u))
                         _['val'].append(1)
-                return tupL + tupH, 1
+                return tupL + tupH, 1 if lowT or highT else 0
 
         return allsat(self.root_u, tuple())[0]

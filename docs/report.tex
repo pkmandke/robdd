@@ -128,12 +128,151 @@
                 \item[4.] \textbf{StatCount, AnySat and AllSat}
                 
                     Until now, I have considered relatively trivial examples since it was difficult to obtain T tables to compare and verify correctness.
-                    However, for the statistical measures, the University of Utah provides a BDD interface for result verification at this URL [1].
+                    However, for the statistical measures, the University of Utah provides a BDD interface for result verification at \href{http://formal.cs.utah.edu:8080/pbl/BDD.php}{this URL [1]}.
 
-                    Consider the expression 
+                    Consider the expression \textbf{not(or(and(equiv(x1, x2), equiv(x3, x4)), or(equiv(imp(x1, x5), imp(x4, x6)), and(x3, x7))))} which I made up randomly.
+
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=200px, width=350px]{img/test_stats_true_1.png}
+                        \caption{Statistics True Output 1.}
+                        \label{fig:test_stats_true_1}
+                    \end{figure}
+
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=200px, width=350px]{img/test_stats_true_2.png}
+                        \caption{Statistics True Output 2.}
+                        \label{fig:test_stats_true_2}
+                    \end{figure}
+
+                    \begin{figure}[htp]
+                        \centering
+                        \includegraphics[height=200px, width=350px]{img/test_stats.png}
+                        \caption{Testing Stats utilities.}
+                        \label{fig:test_stats}
+                    \end{figure}
+
+                    Figure \ref{fig:test_stats_true_1} demonstrates the true results using \href{http://formal.cs.utah.edu:8080/pbl/BDD.php}{[1]}.
+                    Figure \ref{fig:test_stats} shows the results of my program.
+                    It can be verified that the number of satisfying assignments is 28 in both the cases.
+
+                    Further \ref{fig:test_stats_true_2} shows the remaining of all the true satisfying assignments from using [1].
+                    The program returns \[0,0,0,1,-1,0,-1\] as a possible satisfying assignment.
+                    The -1's indicate don't cares.
+                    Thus, in effect, this implies 4 different truth assignments.
+                    From Figure \ref{fig:test_stats_true_1} and Figure \ref{fig:test_stats_true_2}, it can be seen that all 4 assignments that is [0,0,0,1,0,0,0], [0,0,0,1,0,0,1], [0,0,0,1,1,0,0], and [0,0,0,1,1,0,1] are a part of the truth assignment list.
+
+                    For AllSat, the program output in Figure \ref{fig:test_stats} shows a set of unique truth assignments without considering don't cares.
+                    Thus, it is not immediately obvious whether all assignments are being shown.
+                    To verify this, I have written a simple script to exhaustively search and count all combinations of don't care assignments (of those variables that aren't a part of var\_idx).
+                    Clearly, this count must equal the output of StatCount for the output of AllSat to be correct.
+                    Both values are observed to be 28.
+
 
             \end{itemize}
-    
+
+        \subsection{Rutime Analysis}
+            
+            Consider the expression from the previous section \textbf{not(or(and(equiv(x1, x2), equiv(x3, x4)), or(equiv(imp(x1, x5), imp(x4, x6)), and(x3, x7))))}.
+            In order to study time consumption by the program, I have increased the (maximum) number of variables in this expression.
+            Since methods like build exhaustively search for path of all combinations of variables, the runtime analysis is expected to show a relatively sharp increasing trend.
+
+            \begin{table}[H]
+                \centering
+                \caption{Time analysis (All values in seconds).}
+                \label{tab:time_analysis}
+                \begin{tabular}{|c|c|c|c|c|c|}
+                    \hline \textbf{Maximum Variables} & \textbf{7} & \textbf{10} & \textbf{12} & \textbf{15} & \textbf{20} \\ \hline
+                    \textbf{Build and Mk} & 0.000978s & 0.006462s & 0.026108s & 0.205158s & 6.831364s\\ \hline
+                    % \textbf{Apply} & 0.000133s & 0.000134s & 0.000157s & 0.000134s\\ \hline
+                    % \textbf{Restrict} & 0.000570s & 0.000086s & 0.000150s & 0.000083s \\ \hline
+                    % \textbf{StatCount} & 0.000098s & 0.000067s & 0.000070s & 0.000071s \\ \hline
+                    % \textbf{AnySat} & 0.000031s & 0.000008s & 0.000009s & 0.000009s \\ \hline
+                    % \textbf{AllSat} & 0.000060s & 000041s & 0.000061s & 0.000043s\\ \hline
+                \end{tabular}
+            \end{table}
+
+            Please refer to Table \ref{tab:time_analysis} for time runtime details of Build (and implicitly that of Mk).
+            For verifying Build and Mk, I have used the aforementioned expression and increased the maximum variable count as shown in Table \ref{tab:time_analysis}.
+            It can be observed that the runtime increases almost exponentially as the maximum number of variables in the expression increase.
+            Since Build exhaustively traverses the path of all combinations of variables, the time is exponential in the number of variables.
+            It is interesting to observe that merely increasing the number of variables (without including them in the expression) does not affect the time taken by any of the other methods such sa Apply, Restrict, etc.
+
+            This is due to the fact that the other methods do not depend on the maximum number of variables but rather on the number of nodes in the ROBDD.
+            Thus, in order to study their runtime, I consider the following increasing complex expressions in terms of the number of nodes in their ROBDDs and not just the maximum number of variables.
+            
+            \begin{itemize}
+                \item[1.] \textbf{Apply}
+                    
+                    Table \ref{tab:apply_analysis} shows the time taken by Apply utility in combining two expressions.
+                    The runtime is proportional to the product of the number of nodes in the expressions to be combined.
+                    
+                    \begin{table}[!tbh]
+                        \centering
+                        \caption{Time analysis of Apply.}
+                        \label{tab:apply_analysis}
+                        \resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|}
+                            \hline
+                            \textbf{Run} & 1 & 2 \\ \hline
+                            \textbf{Expression1} & and(equiv(x1, x2), equiv(x3, x4)) & equiv(x7, x4)\\ \hline
+                            \textbf{Expression2} & or(equiv(imp(x1, x5), imp(x4, x6)), and(x3, x7)) & and(x3, x7) \\ \hline
+                            \textbf{Operator} & OR & OR \\ \hline
+                            \textbf{\# of nodes in expr1} & 8 & 5 \\ \hline
+                            \textbf{\# of nodes in expr2} & 18 & 4\\ \hline
+                            \textbf{Time} & 0.000127s & 0.000044s\\ \hline
+                        \end{tabular}}
+                    \end{table}
+
+
+                \item[2.] \textbf{Restrict, AnySat, AllSat and StatCount}
+                
+                    To verify Restrict, AnySat and StatCount, I consider the following two expressions with different number of nodes in their ROBDDs.
+                    Refer to Table \ref{tab:restrict_etal_analysis}.
+                    
+                    \begin{table}[!tbh]
+                        \centering
+                        \caption{Time analysis of Restrict, AnySat, AllSat and StatCount.}
+                        \label{tab:restrict_etal_analysis}
+                        \resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|}
+                            \hline
+                            \textbf{Run} & 1 & 2 \\ \hline
+                            \textbf{Expression} & not(or(and(equiv(x1, x2), equiv(x3, x4)), or(equiv( \\ & imp(x1, x5), imp(x4, x6)), and(x3, x7)))) & and(x7, x4)\\ \hline
+                            \textbf{\# of nodes in expr} & 24 & 4 \\ \hline
+                            \textbf{Restrict Time} & 0.0.000098s & 0.000018s\\ \hline
+                            \textbf{StatCount Time} & 0.000076s & 0.000022s\\ \hline
+                            \textbf{AnySat Time} & 0.000012s & 0.000006s\\ \hline
+                            \textbf{AllSat Time} & 0.000048s & 0.000006s\\ \hline
+                        \end{tabular}}
+                    \end{table}
+
+                    From Table \ref{tab:restrict_etal_analysis}, it can be observed that the time taken by Restrict, AnySat, AllSat, and StatCount is proportionate to the number of nodes in the ROBDD of the expression.
+                    Certain interesting trends can also be observed.
+                    The time for AnySat and AllSat is the same for $and(x7, x4)$ since there is exactly 1 true assignment for the AND expression.
+                    Further, for the first expression, AnySat takes almost a forth of the time of AllSat.
+                    The time for StatCount is larger than AllSat for all expressions.
+                    This could be because while StatCount involves computing powers of 2, AllSat simply involves appending 1/0's to lists of assignments.
+
+            \end{itemize}
+        
+        \subsection{Function Equivalence}
+
+            Figure \ref{fig:eq_check}, shows the ROBDDs for the two equivalent expressions: $imp(p, q)$ and $imp(not(q), not(p))$.
+
+            \begin{figure}[htp]
+                \centering
+                \includegraphics[height=200px, width=350px]{img/eq_check.png}
+                \caption{Functional Equivalnce check}
+                \label{fig:eq_check}
+            \end{figure}
+
+            It is evident that the two ROBDDs are equivalent thus verifying functional equivalence.
+            This is because two different expressions always have unique ROBDDs.
+            
+            % The overall command for a particular instantiation with 7 variables is \\ $python3 main.py --nvars 7 --expr not(or(and(equiv(x1, x2), equiv(x3, x4)), or(equiv(imp(x1, x5), imp(x4, x6)), and(x3, x7)))) --nvars1 7 --expr1 and(equiv(x1, x2), equiv(x3, x4)) --nvars2 7 --expr2 or(equiv(imp(x1, x5), imp(x4, x6)), and(x3, x7)) --op or --j 2 --b 1 --call test_time_checks$
+
+                        
+            
     \section{References}
 
             [1]  \href{http://formal.cs.utah.edu:8080/pbl/BDD.php}{http://formal.cs.utah.edu:8080/pbl/BDD.php}

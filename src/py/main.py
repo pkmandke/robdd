@@ -6,27 +6,14 @@ Main trigger script.
 from wrapper import Wrapper
 import utils
 import sys
+import time
+from datetime import timedelta
 
 def main():
 
     test_obj = Wrapper(use_rdp=True)
 
     getattr(sys.modules['__main__'], test_obj.args.call)(test_obj)
-    exit(0)
-    print("ROBDD constructed from inout expression. T table is {0} and root node is {1}".format(test_obj.robdd.T, test_obj.build_robdd()))
-
-    print("AllSat utlitity output: {}".format(test_obj.stat_utils()))
-
-    print("AnySat utlitity output: {}".format(test_obj.stat_utils(util='AnySat')))
-
-    print("StatCount utlitity output: {}".format(test_obj.stat_utils(util='StatCount')))
-
-
-    print(test_obj.apply().T)
-
-    res_rbd = test_obj.restrict(j=1, b=0)
-    print("RESTRICT returns robdd {0} with root {1}.".format(res_rbd.T, res_rbd.root_u))
-
 
 def test_build_mk(test_obj):
     test_obj.build_robdd()
@@ -42,10 +29,10 @@ def test_apply(test_obj):
     utils.print_neat_T(rbd)
 
 def test_stats(test_obj):
-    print("Working with expr {0}. Having ROBDD: ".format(test_obj.args.expr))
+    print("Working with expr: {0}".format(test_obj.args.expr))
     test_obj.build_robdd()
-    utils.print_neat_T(test_obj.robdd)
-    print()
+    # utils.print_neat_T(test_obj.robdd)
+    #print()
     test_obj.compute_all_stats()
 
 
@@ -53,6 +40,70 @@ def test_restrict(test_obj):
     test_obj.build_robdd()
     print("Restricting expr {0} with j={1} with value {2}.".format(test_obj.args.expr, test_obj.args.j, test_obj.args.b))
     utils.print_neat_T(test_obj.restrict(test_obj.args.j, test_obj.args.b))
+
+def test_time_checks(test_obj):
+
+    t1 = time.monotonic()
+    test_obj.build_robdd()
+    t2 = time.monotonic()
+    print("Build and Make: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.apply()
+    t2 = time.monotonic()
+    print("Apply: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.restrict(test_obj.args.j, test_obj.args.b)
+    t2 = time.monotonic()
+    print("Restrict: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='StatCount')
+    t2 = time.monotonic()
+    print("StatCount: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='AnySat')
+    t2 = time.monotonic()
+    print("AnySat: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='AllSat')
+    t2 = time.monotonic()
+    print("AllSat: {}s".format(timedelta(seconds=t2 - t1)))
+
+def test_apply_etal(test_obj):
+
+    t1 = time.monotonic()
+    r, _, _ = test_obj.apply()
+    t2 = time.monotonic()
+    print("Number of nodes in expression 1 {0}.\nNumber of nodes in expression 2 {1}.".format(len(test_obj.robdds[0].T.keys()), len(test_obj.robdds[1].T.keys())))
+    print("Apply: {}s".format(timedelta(seconds=t2 - t1)))
+def test_restrict_etal(test_obj):
+
+    test_obj.build_robdd()
+    print("Number of nodes in the ROBDD = {}".format(len(test_obj.robdd.T.keys())))
+    t1 = time.monotonic()
+    test_obj.restrict(test_obj.args.j, test_obj.args.b)
+    t2 = time.monotonic()
+    print("Restrict: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='StatCount')
+    t2 = time.monotonic()
+    print("StatCount: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='AnySat')
+    t2 = time.monotonic()
+    print("AnySat: {}s".format(timedelta(seconds=t2 - t1)))
+
+    t1 = time.monotonic()
+    test_obj.stat_utils(util='AllSat')
+    t2 = time.monotonic()
+    print("AllSat: {}s".format(timedelta(seconds=t2 - t1)))
+
 
 if __name__ == '__main__':
     main()
