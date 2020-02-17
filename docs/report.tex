@@ -8,6 +8,7 @@
 \usepackage{float}
 \usepackage{mdframed}
 \usepackage{subfig}
+\usepackage[T1]{fontenc}
 \DeclareMathOperator{\argmax}{arg\,max}
 \numberwithin{equation}{section}
 % For box
@@ -34,23 +35,105 @@
 
     \section{Lab Overview}
 
-        Reduced Ordered Binary Decision Diagrams (ROBDDs) are concise representations of boolean expressions in the form of a directed acyclic graph.
+        Reduced Ordered Binary Decision Diagrams (ROBDDs) are concise representations of boolean expressions in the form of directed acyclic graphs.
         ROBDDs make use of the if-then-else (INF) form of boolean expressions to construct the graphical representation.
-        An INF form of a boolean expression is one where any operations are only perfomed on variables with constants and INF statements.
+        An INF form of a boolean expression is one where any operations are only perfomed on variables combined with constants and other (recursive) INF statements.
         The practicality of using the INF form to construct ROBDDs for any boolean expression stems from the Shannon Expansion idea.
         Shannon Expansion involves breaking down an expression (with arbitrary number of variables) into an INF form by recursively setting and resetting the value of one variable at a time.
         From the perspective of implementation in digital logic, the Shannon Expansion involves cascading multiplexer circuits by considering all combinations of a boolean variable at a time.
         
         When a complicated boolean expression is recursively broken down into it's INF, a series of INF statements are obtained.
-        Now, if any redundant INF statements are combined, the resulting set of INF statements can be expressed as a binary decision diagram.
+        Now, if any redundant INF statements are combined, the resulting set of INF statements can be expressed as a binary decision diagram (BDD).
         When the order of variable selection is same across all recursive builds of the INF forms, the resulting decision diagram has nodes in the same order starting from the root.
         Such a BDD is said to be an ordered BDD.
         Going one step further, multiple nodes with the same left and right nodes can be combined since they are obviously redundant.
         Such reduction leads to a unique representation of the boolean expression known as the ROBDD.
-        However, it is interesting to note that this representation is not unique to the order of variable selection and is in fact highly sensitive to it.
-        
+
         This work involves the implementation of a ROBDD for boolean operations AND, OR, NOT, IMPLICATION and EQUIVALENCE.
         The methods used to implement the ROBDD have been inspired from Henrik Anderson's document on Binary Decision Diagrams.
+        Specifically, the Build, Mk, Apply, Restrict, AllSat, StatCount and AnySat methods have been implemented.
+        Build and Mk together make sure that the resulting BDD is in the reduced form.
+        Apply combined the ROBDDs of 2 different expressions into a single ROBDD.
+        Restrict constrains the ROBDD of a given expression by subsitituting for the values of certain variables.
+        AllSat, Anysat and StatCount repectively return all the satisfying truth assignments, any one (arbitrary) truth assignment and the total number of truth assignments.
+         
+    \section{Code Structure}
+
+        The ROBDD program has been implemented using the Python programming language.
+        The main program accepts the expression as a command-line argument.
+        Note that the input expression is not checked for correctness or balanced brackets.
+        The input expression is first handled by a simple Lexical Analyzer to separate variables, functions and constants.
+        Further, a Recursive Descent Parser (RDP) builds a tree from the lexical analyzers parsing output by quering the lexical analyzer.
+        The expression API then recursively travels the RDP to compute/solve the boolean expression.
+        
+        The main classes and utilities in the codebase have been elucidated below.
+        
+        \begin{itemize}
+            \item[1.] \textbf{robdd.py}
+                
+                This file defines the main \textbf{ROBDD} class that consists of the methods \textbf{Build, Mk, AnySat, AllSat and StatCount}.
+                The ROBDD takes in the expression along with the number of variables as input while instantiation.
+                
+            \item[2.] \textbf{parsing.py}
+            
+                This file defines 3 important classes for handling the input expression.
+                
+                \textbf{Class Options:} Handles commandline arguments.
+                
+                \textbf{Class Lexer:} The Lexical Analyzer that reads the expression from the commandline and gets them ready for consumption by the RecursiveDescentParser class.
+
+                \textbf{Class RecursiveDescentParser:} This class builds an expression tree and provides a method to traverse it.
+
+            \item[3.] \textbf{expression.py}
+            
+                The \textbf{Expression class} in this file stands as a unified API for different of expression formats.
+                Particularly, it can handle expression with or without the RecursiveDescentParser.
+                Although, this functionality is now deprecated since the RecursiveDescentParser is intuitive and easy to use.
+                Thus, the use\_rdp flag can be ignored.
+
+            \item[4.] \textbf{utils.py}
+            
+                In addition to common utilities, this file defines the \textbf{Apply} and \textbf{Restrict} utilities as functions.
+                This file also defines a \textbf{RDP\_node} class, which defines a node in a RecursiveDescentParser.
+            
+            \item[5.] \textbf{wrapper.py}
+            
+                The \textbf{Wrapper class} in this file provides a unifies API to using and testing various functionalities of the other classes.
+                Importantly, it abstracts away the instantiation of all the aforementioned classes and handles the same with intuitive methods.
+                It begins by accepting commandline arguments by instantiating the Options class from parsing.py and instantiating the Lexer, the RecursiveDescentParser, the Expression and one or more ROBDDs as needed.
+
+            \item[6.] \textbf{main.py}
+            
+                The main program instantiates the Wrapper class and performs any required functions.
+                The main program needs to be invoked with appropriate commandline parameters.
+                Below are the commandline options, all of which are optional.
+
+                nvars: int -> The maximum number of variables in the main expression.
+                
+                expr: str -> The main boolean expression as astring. Eg: --expr "equiv(imp(not(x1), and(x2, x3)), x3)"
+                
+                nvars1: int -> The maximum number of variables in expression 1. (Used by Apply as the first of two ROBDDs to be combined.)
+                
+                expr1: int -> The first of two expressions used by Apply to combine.
+                
+                nvars1: int -> The maximum number of variables in expression 2. (Used by Apply as the second of two ROBDDs to be combined.)
+                
+                expr1: int -> The second of two expressions used by Apply to combine.
+                
+                op: str -> The operation used by Apply to combine expr1 and expr2.
+                
+                j: int -> The variable number to be restricted with Restrict.
+                
+                b: int -> The value the variable x[j]. Must be either 0 or 1.
+                
+                call: str -> Name of the function defined in main.py that should be called on invoking main.py with the above command line parameters.
+
+                A typical invokation could be:
+
+                python3 main.py --nvars 2 --expr "and(x1, x2)" --nvars1 2 --expr1 "or(x1, x2)" --nvars 2 "not(x2)" --op "or" --j 2 --b 1 --call test\_time\_checks
+
+        \end{itemize}
+        
 
     \section{Tests}
 
@@ -182,9 +265,15 @@
                 \centering
                 \caption{Time analysis (All values in seconds).}
                 \label{tab:time_analysis}
-                \begin{tabular}{|c|c|c|c|c|c|}
-                    \hline \textbf{Maximum Variables} & \textbf{7} & \textbf{10} & \textbf{12} & \textbf{15} & \textbf{20} \\ \hline
-                    \textbf{Build and Mk} & 0.000978s & 0.006462s & 0.026108s & 0.205158s & 6.831364s\\ \hline
+                \begin{tabular}{|c|c|}
+                    \hline \textbf{Maximum Variables} & \textbf{Build and Mk Time} \\ \hline
+                    \textbf{7} & 0.000978s \\ \hline
+                    \textbf{10} & 0.006462s \\ \hline
+                    \textbf{12} & 0.026108s \\ \hline
+                    \textbf{15} & 0.205158s \\ \hline
+                    \textbf{20} & 6.831364s \\ \hline
+                    \textbf{22} & 28.956934s \\ \hline
+                    \textbf{25} & 03m48.974962s \\ \hline
                     % \textbf{Apply} & 0.000133s & 0.000134s & 0.000157s & 0.000134s\\ \hline
                     % \textbf{Restrict} & 0.000570s & 0.000086s & 0.000150s & 0.000083s \\ \hline
                     % \textbf{StatCount} & 0.000098s & 0.000067s & 0.000070s & 0.000071s \\ \hline
@@ -206,6 +295,7 @@
                 \item[1.] \textbf{Apply}
                     
                     Table \ref{tab:apply_analysis} shows the time taken by Apply utility in combining two expressions.
+                    The table consists of results from 2 runs with expressions of different sizes to be combined with the OR operator.
                     The runtime is proportional to the product of the number of nodes in the expressions to be combined.
                     
                     \begin{table}[!tbh]
