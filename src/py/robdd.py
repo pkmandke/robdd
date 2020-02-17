@@ -149,9 +149,7 @@ class ROBDD:
 
         def anysat(u, tup):
 
-            if u == 0:
-                return None
-            elif u == 1:
+            if u in [-1, 0, 1]:
                 return tup
             elif self.low_T(u) == 0:
                 tl = list(tup)
@@ -160,7 +158,7 @@ class ROBDD:
                 return anysat(self.high_T(u), tup)
             else:
                 tl = list(tup)
-                tl[self.var_T(u)] = 1
+                tl[self.var_T(u)] = 0
                 tup = tuple(tl)
                 return anysat(self.low_T(u), tup)
 
