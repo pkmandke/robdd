@@ -54,3 +54,11 @@ class Wrapper:
     def restrict(self, j: int, b: int):
 
         return utils.Restrict(self.robdd, self.robdd.root_u, j, b)
+
+    def compute_all_stats(self):
+
+        print("Computing all Statistics for given expression.")
+        print("StatCount = {}".format(self.stat_utils('StatCount')))
+        print("AnySat: {}".format(self.stat_utils('AnySat')))
+        print("AllSat returns:")
+        print(self.stat_utils('AllSat'))

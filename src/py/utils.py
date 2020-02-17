@@ -99,21 +99,21 @@ def Restrict(rbd1, u, j, b):
     elif rbd1.root_u == 1:
         rbd.root_u = 1
     else:
-        for i in range(len(rbd1.T.keys())):
+        for i in rbd1.T.keys():
             if rbd1.var_T(i) != j:
                 rt = restrict(i)
 
-        for key in rbd.T.copy().keys():
+        for key in rbd.T.copy().keys(): # Remove any keys greater than the new root
             if key > rt:
                 del rbd.T[key]
 
         ref_keys = []
-        for key in sorted(rbd.T.keys()):
+        for key in sorted(rbd.T.keys()): # Collect only referenced keys
             if key > 1:
                 ref_keys.extend([rbd.T[key][1], rbd.T[key][2]])
 
         ref_keys = list(set(ref_keys))
-        for _ in rbd.T.copy().keys():
+        for _ in rbd.T.copy().keys(): # Remove unrefenced keys
             if _ in ref_keys or _ == rt:
                 continue
             del rbd.T[_]

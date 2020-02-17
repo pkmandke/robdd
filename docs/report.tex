@@ -90,7 +90,7 @@
 
                     \begin{figure}[htp]
                         \centering
-                        \includegraphics[height=200px, width=400px]{img/test_apply.png}
+                        \includegraphics[height=250px, width=400px]{img/test_apply.png}
                         \caption{Testing Apply utility.}
                         \label{fig:test_apply}
                     \end{figure}
@@ -98,25 +98,32 @@
                     It is easy to observe that for the resulting expression "equiv(and(x1, x2), or(x1, x2))" the T table is correct.
                     Starting from the root node number 4, if $x1 = 0$ we check node 2 and if $x1 = 1$ we check node 3.
                     Now, if $x1 = 0$ then $and(x1, x2) = 0$ and the equivalence will only be true if $or(x1, x2)$ is true, that is, if $x2 = 1$.
-                    This is verified from row number 3 of the resulting T table obtained after applying the equiv operation.
+                    This is verified from row with $u = 3$ of the resulting T table obtained after applying the equiv operation.
                     Similarly, the behaviour for $x1 = 1$ can be verified easily.
 
                 \item[3.] \textbf{Restrict}
 
-                    To verify that restrict works as intended, consider the expression or(and(x1, x2), x2).
-                    Figure \ref{fig:test_restrict}, contains the results for all 4 settings of the 2 variables $x1$ and $x2$.
+                    To verify that restrict works as intended, consider the expression not(or(and(x1, x2), equiv(x3, x4))).
+                    Figure \ref{fig:test_restrict}, contains the results of restricting the variables $x1$, $x3$ and $x4$.
 
                     \begin{figure}[htp]
                         \centering
-                        \includegraphics[height=250px, width=350px]{img/test_restrict.png}
+                        \includegraphics[height=250px, width=350px]{img/test_restrict_1.png}
                         \caption{Testing Restrict utility.}
                         \label{fig:test_restrict}
                     \end{figure}
 
-                    It can be observed that when $x1 = 0$, the expression is 0 if x2 is 0 else it is 1.
-                    Moreover, if $x1 = 1$, the expression is 0 if x2 is 0 else it is 1.
-                    With $x2 = 0$, the expression will always be 0 while if $x2 = 1$ the expression is a tautology.
-                    In the last 2 cases, the root of the ROBDD changes although the T table looks alike.
+                    For $x1 = 1$, we start from the root node $u = 5$, that is, we check $x2$.
+                    Now if $x2 = 1$, clearly the OR condition is satisfied and the result is 0 due to the NOT.
+                    If $x2 = 0$, we jump to node $u = 4$ and check x3.
+                    Nodes $u = 2$, $u = 3$ and $u = 4$ capture the inverse of the logic of the EQUIV statement between x3 and x4.
+                    The inverse is due to the outer NOT operator.
+
+                    Similarly, the logic for $x3 = 0$ and $x4 = 1$ can be easily verified.
+                    % It can be observed that when $x1 = 0$, the expression is 0 if x2 is 0 else it is 1.
+                    % Moreover, if $x1 = 1$, the expression is 0 if x2 is 0 else it is 1.
+                    % With $x2 = 0$, the expression will always be 0 while if $x2 = 1$ the expression is a tautology.
+                    % In the last 2 cases, the root of the ROBDD changes although the T table looks alike.
 
                 \item[4.] \textbf{StatCount, AnySat and AllSat}
                 

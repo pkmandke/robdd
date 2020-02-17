@@ -42,11 +42,13 @@ def test_apply(test_obj):
     utils.print_neat_T(rbd)
 
 def test_stats(test_obj):
-    print("Working with expr {0}.".format(test_obj.args.expr))
+    print("Working with expr {0}. Having ROBDD: ".format(test_obj.args.expr))
     test_obj.build_robdd()
     utils.print_neat_T(test_obj.robdd)
+    print()
+    test_obj.compute_all_stats()
 
-    
+
 def test_restrict(test_obj):
     test_obj.build_robdd()
     print("Restricting expr {0} with j={1} with value {2}.".format(test_obj.args.expr, test_obj.args.j, test_obj.args.b))
