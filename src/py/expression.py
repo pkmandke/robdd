@@ -1,15 +1,21 @@
+'''
+Class: Expression
 
+This class provides (to the ROBDD) a unified API to handle (that is build and parse) expressions regardless of how the expressions are accepted, processed or stored. The ROBDD instantiates the variable values in self.x list and calls the evaluate method of this class to get the result.
+
+Note: The staticmethods below are now deprecated and are kept for backward compatibility with the version of the program in which the RecursiveDescentParser was not built and the expression was hardcoded.
+'''
 
 class Expression:
 
     def __init__(self, nvars: int, use_rdp=True, rdp=None):
 
         self.nvars = nvars
-        self.use_rdp = use_rdp
+        self.use_rdp = use_rdp # Whether to use the RecursiveDescentParser or not. Now deprecated.
         if use_rdp:
             self.rdp = rdp
 
-        self.x = [-1 for _ in range(self.nvars + 1)]
+        self.x = [-1 for _ in range(self.nvars + 1)] # instantiate variables with dummy valeues which will later be populated.
 
     @staticmethod
     def __and(a, b):

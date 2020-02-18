@@ -1,7 +1,17 @@
 '''
 
 Main trigger script.
-'''
+
+The user must call this script with appropriate commandline arguments.
+
+This script initializes a Wrapper object (from wrapper.py) based on the commandline arguments.
+
+This script consists of various methods named test_*
+
+These methods test various functions of the ROBDDs built in the Wrapper object.
+
+The --call argument is the name of the method (among those defined in this file) that will be called after initializing the Wrapper object.'''
+
 
 from wrapper import Wrapper
 import utils
@@ -80,7 +90,7 @@ def test_apply_etal(test_obj):
     t2 = time.monotonic()
     print("Number of nodes in expression 1 {0}.\nNumber of nodes in expression 2 {1}.".format(len(test_obj.robdds[0].T.keys()), len(test_obj.robdds[1].T.keys())))
     print("Apply: {}s".format(timedelta(seconds=t2 - t1)))
-    
+
 def test_restrict_etal(test_obj):
 
     test_obj.build_robdd()

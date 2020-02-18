@@ -1,5 +1,7 @@
 '''
 General helper classes and functions.
+
+Class: RDP_node -> A node in the RecursiveDescentParser.
 Also implements the Apply and Restrict utilities as functions that operate on ROBDD objects.
 '''
 
@@ -8,17 +10,19 @@ import robdd
 class RDP_node:
     '''A single node in a Recursive Descent Parser.'''
     def __init__(self, val=None, type='', is_terminal=False, is_var=False, var_index=-1, is_func=False):
-
-        self.val = val
-        self.left, self.right = None, None
+        '''Note: is_var, is_terminal and is_func are now deprecated in light of type and are kept for backward compatibility.'''
+        self.val = val # The value at this node. Can be either a constant, variable or boolean function.
+        self.left, self.right = None, None # left and right nodes of type RDP_node
 
         self.type = type  # Either of ['const', 'var', 'func']
+        # Below variables are (mostly) deprecated.
         self.is_terminal = is_terminal
         self.is_var = is_var
         self.var_index = var_index
         self.is_func = is_func
 
 def apply(op: str, lexpr: int, rexpr=None) -> int:
+    '''This is NOT the Apply utility from Anderon's paper. This function simply takes in two constants and returns the result of the required boolean operation.'''
 
     assert lexpr in [0, 1]
     if op == 'not':
@@ -38,8 +42,12 @@ def apply(op: str, lexpr: int, rexpr=None) -> int:
 
 
 def Apply(op: str, u_1: int, u_2: int, rbd1, rbd2, rbd=None):
-    '''u_1 and u_2 are root values of the nodes of the 2 ROBDDs.'''
-    G = dict()
+    '''The Apply utility from Anderson's paper.
+    u_1 and u_2 are root values of the nodes of the 2 ROBDDs.
+    op: The operator to be applied on the two expressions.
+    rbd1 and rbd2 are ROBDD objects to be combined.
+    rbd (optional) is the ROBDD object to be returned.'''
+    G = dict() # For Dynamic programming
 
     if not rbd:
         rbd = robdd.ROBDD(nvars=rbd1.nvars) # rbd is an uninitialized ROBDD
@@ -122,7 +130,7 @@ def Restrict(rbd1, u, j, b):
     return rbd
 
 def print_neat_T(r):
-
+    '''Some sugarcoat to print the T table for an ROBDD neatly.'''
     print("| u | i |  l |  h |")
 
     for _ in sorted(r.T.keys()):
@@ -130,6 +138,6 @@ def print_neat_T(r):
     print()
 
 def print_neat_allsat(tup, nvars):
-
+    '''Print all the satisfying assignments returned by ROBDD.AllSat nicely.'''
     for _ in tup:
         pass

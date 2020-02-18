@@ -3,8 +3,18 @@ Parsing utilities.
 
 Includes commandline argument parser, a Lexical Analyzer and a Recursive Descent Parser.
 
+Classes:
+
+1. Options: Handles commandline arguments.
+2. Lexer: A Lexical Analyzer that parses the commandline input and feeds the Recursive Descent Parser. Note that the input expression is assumed to be valid.
+3. RecursiveDescentParser: A Recursive Descent Parser that builds an expression tree that is traversed by various utilities (mainly Build) to evaluate the expression.
+
+Note: The expression itself is handled by a separate Expression API defined in the expression.py file.
+This is done so that the ROBDD can have a unified API for expression evaluation regardless of the way the expression is actually stored or processed.
+
 Author: Prathamesh Mandke
 '''
+
 import argparse
 
 import utils
@@ -41,15 +51,14 @@ class Options:
         return self.parser.parse_args()
 
 class Lexer:
-
+    '''The Lexical Analyzer.'''
     def __init__(self, expression):
 
         self.expr = expression
         self.index = 0
 
     def get_next_item(self):
-        '''Note that the input expression is assumed to be valid.'''
-
+        '''Returns one item at a time to the RecursiveDescentParser.'''
         i = self.index
 
         while i < len(self.expr) and self.expr[i] in [' ', ',', '(', ')']:
@@ -89,15 +98,15 @@ class Lexer:
         self.index = 0
 
 class RecursiveDescentParser:
-
+    '''The Recursive Descent Parser (RDP).'''
     def __init__(self, lexer):
 
-        self.lexer = lexer
-        self.root = utils.RDP_node()
-        self.variables_index = 0
+        self.lexer = lexer # The Lexical Analyzer associated with this RDP.
+        self.root = utils.RDP_node() # Root of the RDP
+        self.variables_index = 0 # The variables as encountered are stored in this variable. Only the variable with max index is stored here.
 
     def build(self):
-
+        '''Query the Lexical Analyzer and build a parse tree.'''
         def __build(node):
             item = self.lexer.get_next_item()
 
@@ -146,9 +155,7 @@ class RecursiveDescentParser:
             print("First input cannot be constant or variable. It must be a boolean function among: ['and', 'or', 'not', 'equiv', 'imp']")
 
     def parse_tree(self, variable_val=[]) -> int:
-
-        # assert ((len(variable_val)) - 1) == (self.variables_index) # This assumes that all nvars are present in the input expression.
-
+        '''Parse the tree given a variable instantiation.'''
         def traverse(node):
 
             if node:

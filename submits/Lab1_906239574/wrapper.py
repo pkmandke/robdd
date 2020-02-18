@@ -1,7 +1,9 @@
 '''
-Wrapper class.
+Class: Wrapper
 This class helps instantiate the ROBDD, the Lexical Analyzer, the Recursive Descent Parser and the Expression classes.
 It also serves as an API for calling the various methods of the ROBDD for verification.
+
+This mainly helps abstract away the need to deal with the various Constructors and setup methods of each class.
 '''
 
 import parsing

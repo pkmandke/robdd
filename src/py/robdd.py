@@ -1,5 +1,11 @@
 '''
-The main ROBDD class.
+Class ROBDD
+
+This file defines the main ROBDD class.
+It also includes such methods as Build, Mk, AnySat, AllSat and StatCount among other private methods.
+
+This class also handles the T and H lookup tables.
+These have been defined in the form of Python dictionaries.
 '''
 
 import utils
@@ -8,14 +14,20 @@ import math
 class ROBDD:
 
     def __init__(self, nvars=None, expr=None):
+        '''Custom Constructor.'''
 
+        # Lookup Table T used for storing ROBDD
         self.T = dict()
         self.T_len = 0
+
+        # H table for fast lookup
         self.H = dict()
         self.root_u = -1
 
+        # The expression handled by this ROBDD and it's associated number of variables.
         self.nvars = nvars
         self.expr = expr
+
         if self.expr:
             self.build_initialized = True
         else:
@@ -25,35 +37,37 @@ class ROBDD:
 
 
     def __init_T(self):
+        '''Initialize T'''
         self.T[0] = (self.nvars + 1, -1, -1)
         self.T[1] = (self.nvars + 1, -1, -1)
         self.T_len = 2
 
     def __init_H(self):
+        '''Initialize H'''
         self.H = dict()
 
     def __add_T(self, i, l, h) -> int:
-
+        '''Add an entry to T'''
         self.T[self.T_len] = (i, l, h)
         self.T_len += 1
         return int(self.T_len - 1)
 
     def var_T(self, u: int) -> int:
-
+        '''Get variable of the node numbered u. Return None if this node doesn't exist.'''
         try:
             return self.T[u][0]
         except:
             return None
 
     def low_T(self, u: int) -> int:
-
+        '''Return low child of node u if it exists.'''
         try:
             return self.T[u][1]
         except:
             return None
 
     def high_T(self, u: int) -> int:
-
+        '''return high child of node u if it exists.'''
         try:
             return self.T[u][2]
         except:
@@ -69,7 +83,7 @@ class ROBDD:
         return True
 
     def __lookup_H(self, i, l, h):
-
+        '''Return the u entry for given i, l, h pair.'''
         try:
             val = int(self.H[str(i) + str(',') + str(l) + str(',') + str(h)])
         except KeyError:
@@ -78,11 +92,11 @@ class ROBDD:
         return val
 
     def __insert_H(self, i, l, h, u):
-
+        '''Insert an entry in H.'''
         self.H[str(i) + str(',') + str(l) + str(',') + str(h)] = u
 
     def Mk(self, i: int, l: int, h: int) -> int:
-
+        '''The Make utility from the Anderson's paper.'''
         if l == h:
             return l
 
@@ -96,7 +110,7 @@ class ROBDD:
         return u
 
     def Build(self, nvars=None, expr=None):
-
+        '''The Build utility from the Anderson's paper.'''
         if not self.build_initialized and expr:
             # self.__init_build(self)
             self.expr = expr
@@ -107,7 +121,7 @@ class ROBDD:
             self.__init_H()
 
         def build_util(i):
-
+            '''The build sub function that actually does the heavy lifting.'''
             if i > self.nvars:
                 expr_val = self.expr.evaluate()
                 return 1 if expr_val else 0
@@ -128,7 +142,7 @@ class ROBDD:
             return None
 
     def StatCount(self):
-
+        '''The StatCount method from the Anderson's paper.'''
         assert self.root_u != -1
 
         def count(u):
@@ -146,7 +160,7 @@ class ROBDD:
         return int(math.pow(2, self.var_T(self.root_u) - 1) * count(self.root_u))
 
     def AnySat(self):
-
+        '''The AnySat method from the Anderson's paper. Returns a single satisfying truth assignment as a tuple.'''
         assert self.root_u != -1
 
         def anysat(u, tup):
@@ -167,6 +181,8 @@ class ROBDD:
         return anysat(self.root_u, tuple([-1 for _ in range(self.nvars + 1)]))
 
     def AllSat(self):
+        '''The AllSat method from the Anderson's paper. Returns all satisfying truth assignments as a tuple of dictionaries.
+        Note that don't cares are not exhaustively listed in the return value of this function. These are separately generated from the return value of this method.'''
 
         assert self.root_u != -1
 
